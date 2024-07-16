@@ -1,60 +1,22 @@
-import React, { useState } from 'react';
-import api from '../api';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
-function AddSpace() {
-  const [formData, setFormData] = useState({
-    name: '',
-    location: '',
-    price: '',
-    description: '',
-  });
+const AddSpace = () => {
+  const history = useHistory();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    api.post('/spaces', formData)
-      .then(response => {
-        console.log('Space added successfully:', response.data);
-      })
-      .catch(error => {
-        console.error('There was an error adding the space!', error);
-      });
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      history.push('/login');
+    }
+  }, [history]);
 
   return (
     <div>
-      <h1>Add New Space</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input type="text" name="name" value={formData.name} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Location:
-          <input type="text" name="location" value={formData.location} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Price:
-          <input type="text" name="price" value={formData.price} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Description:
-          <textarea name="description" value={formData.description} onChange={handleChange}></textarea>
-        </label>
-        <br />
-        <button type="submit">Add Space</button>
-      </form>
+      <h1>Add Space</h1>
+      {/* ฟอร์มสำหรับเพิ่มพื้นที่ */}
     </div>
   );
-}
+};
 
 export default AddSpace;

@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../axiosConfig'; // นำเข้า axiosConfig
+import { getAllSpaces } from '../services/api';
 
 const Home = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // เรียกใช้ Axios เพื่อเรียกข้อมูลจาก Backend
-    axios.get('/path-to-your-api-endpoint')
-      .then(response => {
-        setData(response.data);
-      })
-      .catch(error => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllSpaces();
+        setData(response);
+      } catch (error) {
         console.error('Error fetching data:', error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
     <div>
-      <h1>Home Page</h1>
-      {/* แสดงข้อมูลที่ได้จาก API */}
-      <ul>
-        {data.map((item, index) => (
-          <li key={index}>{item.name}</li>
-        ))}
-      </ul>
+      <h1>Data from Backend</h1>
+      {data.length > 0 ? (
+        <ul>
+          {data.map((item) => (
+            <li key={item.id}>{item.name}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No data available</p>
+      )}
     </div>
   );
 };
