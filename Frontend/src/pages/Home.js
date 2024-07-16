@@ -1,29 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api';
+import axios from '../axiosConfig'; // นำเข้า axiosConfig
 
-function Home() {
+const Home = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    api.get('/your-endpoint')
+    // เรียกใช้ Axios เพื่อเรียกข้อมูลจาก Backend
+    axios.get('/path-to-your-api-endpoint')
       .then(response => {
         setData(response.data);
       })
       .catch(error => {
-        console.error('There was an error fetching the data!', error);
+        console.error('Error fetching data:', error);
       });
   }, []);
 
   return (
     <div>
-      <h1>Welcome to Space Renting Service</h1>
+      <h1>Home Page</h1>
+      {/* แสดงข้อมูลที่ได้จาก API */}
       <ul>
-        {data.map(item => (
-          <li key={item.id}>{item.name}</li>
+        {data.map((item, index) => (
+          <li key={index}>{item.name}</li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default Home;
