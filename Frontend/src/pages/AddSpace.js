@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AddSpace = () => {
-  const history = useHistory();
+  const history = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');

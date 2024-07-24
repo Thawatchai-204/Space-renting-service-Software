@@ -1,47 +1,45 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import './Login.css';
 
-const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/api/login', {
-        username,
-        password,
-      });
-      console.log('User logged in:', response.data);
-    } catch (error) {
-      console.error('Error logging in user:', error);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+function Login() {
+    return (
+        <div className="login-container">
+            <div className="login-left">
+                <h1>Space renting service Software</h1>
+                <img src="https://i0.wp.com/storage.googleapis.com/fplswordpressblog/2024/04/4-10.png?resize=1024%2C1024&ssl=1" alt="Space renting" />
+            </div>
+            <div className="login-right">
+                <h1>Login</h1>
+                <form>
+                    <div className="input-group">
+                        <label htmlFor="email">E-mail</label>
+                        <input type="email" id="email" required />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="password">Password</label>
+                        <input type="password" id="password" required />
+                    </div>
+                    <div className="social-login">
+                        <button type="button" className="social-button facebook">Facebook</button>
+                        <button type="button" className="social-button google">Gmail</button>
+                        <button type="button" className="social-button apple">Apple</button>
+                        <button type="button" className="social-button line">LINE</button>
+                    </div>
+                    <div className="remember-me">
+                        <input type="checkbox" id="remember-me" />
+                        <label htmlFor="remember-me">Keep a record of my usage</label>
+                    </div>
+                    <div className="forgot-password">
+                        <a href="/forgot-password">Forget password</a> 
+                    </div>
+                    <button type="submit" className="login-button">Login</button>
+                </form>
+                <div className="create-account">
+                    <a href="/register">Create a new account</a> 
+                </div>
+            </div>
         </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
-};
+    );
+}
 
 export default Login;

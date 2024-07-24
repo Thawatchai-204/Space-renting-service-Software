@@ -1,47 +1,28 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import './Register.css';
 
-const Register = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/api/register', {
-        username,
-        password,
-      });
-      console.log('User registered:', response.data);
-    } catch (error) {
-      console.error('Error registering user:', error);
-    }
-  };
-
+function Register() {
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">Register</button>
-      </form>
+    <div className="register-container">
+      <div className="left-section">
+        <h2>Sign Up</h2>
+        <form>
+          <input type="email" placeholder="E-mail" required />
+          <input type="password" placeholder="Password" required />
+          <input type="password" placeholder="Confirm Password" required />
+          <select required>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit">Sign Up</button>
+          <a href="/login">Login</a>
+        </form>
+      </div>
+      <div className="right-section">
+        <img src="https://d4804za1f1gw.cloudfront.net/wp-content/uploads/sites/60/2023/09/Job-Answers-Lead-Image.png" alt="Space renting service Software" className="logo" />
+      </div>
     </div>
   );
-};
+}
 
 export default Register;
