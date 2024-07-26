@@ -1,156 +1,199 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
 
-.home-container {
-    display: flex;
-}
+    .home-container {
+        display: flex;
+        height: 100vh;
+    }
 
-.sidebar {
-    width: 200px;
-    background-color: #333;
-    color: white;
-    padding: 20px;
-}
+    .sidebar {
+        width: 250px;
+        background-color: #000000; /* สีฟ้าเข้ม */
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
 
-.sidebar .logo img {
-    width: 100%;
-    margin-bottom: 20px;
-}
+    .sidebar .logo img {
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-.sidebar nav ul {
-    list-style-type: none;
-    padding: 0;
-}
+    .sidebar nav ul {
+        list-style-type: none;
+        padding: 0;
+        width: 100%;
+    }
 
-.sidebar nav ul li {
-    margin: 20px 0;
-}
+    .sidebar nav ul li {
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-.sidebar nav ul li a {
-    color: white;
-    text-decoration: none;
-}
+    .sidebar nav ul li a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #176B87; /* สีฟ้าสดใส */
+        transition: background-color 0.3s ease;
+    }
 
-.sidebar nav ul li.active a {
-    font-weight: bold;
-}
+    .sidebar nav ul li a svg {
+        margin-right: 10px;
+    }
 
-.main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #f4f4f4;
-}
+    .sidebar nav ul li a:hover {
+        background-color: #000000; /* สีฟ้าเข้ม */
+    }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+    .sidebar nav ul li.active a {
+        background-color: #64CCC5; /* สีฟ้าอ่อน */
+        font-weight: bold;
+    }
 
-header .search-bar input {
-    padding: 10px;
-    font-size: 16px;
-}
+    .sidebar nav ul li.logout a {
+        background-color: #e74c3c;
+    }
 
-header .user-info {
-    display: flex;
-    align-items: center;
-}
+    .main-content {
+        flex: 1;
+        padding: 20px;
+        background-color: #ecf0f1;
+        display: flex;
+        flex-direction: column;
+    }
 
-header .user-info .notification-icon {
-    margin-right: 20px;
-    font-size: 20px;
-}
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-header .user-info .user-name {
-    margin-right: 10px;
-}
+    header .search-bar input {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
 
-header .user-info .user-balance {
-    background-color: #ccc;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
+    header .user-info {
+        display: flex;
+        align-items: center;
+    }
 
-.management-section {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
+    header .user-info .notification-icon {
+        margin-right: 20px;
+        font-size: 20px;
+    }
 
-.management-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: black;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
+    header .user-info .user-name {
+        margin-right: 10px;
+    }
 
-.ready-to-reserve h2 {
-    margin-bottom: 20px;
-}
+    header .user-info .user-balance {
+        background-color: #3498db;
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: white;
+    }
 
-.storage-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
+    .management-section {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
 
-.storage-option {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    text-align: center;
-}
+    .management-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-.storage-option img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
+    .content {
+        display: flex;
+        flex: 1;
+        gap: 20px;
+    }
 
-.filter-section {
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    .main-content-section {
+        flex: 3;
+    }
 
-.filter-section h2 {
-    margin-bottom: 20px;
-}
+    .ready-to-reserve h2 {
+        margin-bottom: 20px;
+    }
 
-.filter-group {
-    margin-bottom: 20px;
-}
+    .storage-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
 
-.filter-group label {
-    display: block;
-    margin-bottom: 5px;
-}
+    .storage-option {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 200px;
+        text-align: center;
+    }
 
-.filter-group select,
-.filter-group input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+    .storage-option img {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
 
-.apply-button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+    .filter-section {
+        width: 250px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-section h2 {
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        margin-bottom: 20px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .apply-button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        background-color: #176B87; /* สีฟ้าสดใส */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }

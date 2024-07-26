@@ -9,6 +9,7 @@ function Login() {
                 <img src="https://i0.wp.com/storage.googleapis.com/fplswordpressblog/2024/04/4-10.png?resize=1024%2C1024&ssl=1" alt="Space renting" />
             </div>
             <div className="login-right">
+            <a href="/Home">Skip</a>
                 <h1>Login</h1>
                 <form>
                     <div className="input-group">
@@ -30,12 +31,12 @@ function Login() {
                         <label htmlFor="remember-me">Keep a record of my usage</label>
                     </div>
                     <div className="forgot-password">
-                        <a href="/forgot-password">Forget password</a> 
+                        <a href="/forgot-password">Forget password</a>
                     </div>
                     <button type="submit" className="login-button">Login</button>
                 </form>
                 <div className="create-account">
-                    <a href="/register">Create a new account</a> 
+                    <a href="/register">Create a new account</a>
                 </div>
             </div>
         </div>
