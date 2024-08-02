@@ -1,0 +1,162 @@
+.wallet-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #000000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.sidebar .logo img {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #176B87;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar nav ul li.active a {
+    background-color: #64CCC5;
+    font-weight: bold;
+}
+
+.sidebar nav ul li.logout a {
+    background-color: #e74c3c;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header .search-bar input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+header .user-info {
+    display: flex;
+    align-items: center;
+}
+
+header .user-info .notification-icon {
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+header .user-info .user-name {
+    margin-right: 10px;
+}
+
+header .user-info .user-balance {
+    background-color: #3498db;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.wallet-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.wallet-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-info .avatar {
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.wallet-info h2 {
+    flex: 1;
+    margin: 0;
+}
+
+.wallet-info .balance {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.top-up-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #176B87;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.transaction-history {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.transaction-history h3 {
+    margin-bottom: 20px;
+}
+
+.transaction-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-history table, th, td {
+    border: 1px solid #ddd;
+}
+
+.transaction-history th, td {
+    padding: 15px;
+    text-align: left;
+}

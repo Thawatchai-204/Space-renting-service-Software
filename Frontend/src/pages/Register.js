@@ -11,11 +11,12 @@ function Register() {
           <input type="password" placeholder="Password" required />
           <input type="password" placeholder="Confirm Password" required />
           <select required>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
+            <option value=" ">Select</option>
+            <option value="user">Service user</option>
+            <option value="admin">Service provider</option>
           </select>
-          <button type="submit">Sign Up</button>
-          <a href="/login">Login</a>
+            <button type="submit">Sign Up</button>
+            <a href="/login">Login</a>
         </form>
       </div>
       <div className="right-section">

@@ -1,17 +1,36 @@
-.App {
-  text-align: center;
+.language-toggle {
+  position: fixed;
+  bottom: 50px; /* Space from the bottom edge */
+  left: 5%; /* Space from the left edge */
+
+
+
+
+  padding: 12px;
+  border-radius: 50px; /* Circular background for a modern look */
+  box-shadow: 0 4px 8px rgba(1, 2, 79, 0.15); /* Subtle shadow for depth */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-nav ul {
-  list-style: none;
-  padding: 0;
+.language-toggle button {
+  background-color: #595959; /* Vibrant color for the button */
+  color: white;
+  border: none; /* Remove border from the button */
+  padding: 12px 24px;
+  border-radius: 50px; /* Fully rounded button */
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
 }
 
-nav li {
-  display: inline;
-  margin: 0 10px;
+.language-toggle button:hover {
+  background-color: #e64a19; /* Darker shade for hover effect */
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
 }
 
-footer {
-  margin-top: 20px;
+.language-toggle button:focus {
+  outline: none; /* Remove default outline */
 }

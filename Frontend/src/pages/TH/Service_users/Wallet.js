@@ -10,11 +10,11 @@ function Wallet() {
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="/Home">Home</a></li>
-                        <li><a href="/Reserve">Reserve</a></li>
-                        <li className="active"><a href="/Profile">Profile</a></li>
-                        <li><a href="/Settings">Settings</a></li>
-                        <li className="logout"><a href="/login">Log out</a></li>
+                        <li><a href="/Home"> หน้าแรก</a></li>
+                        <li><a href="/Reserve"> การจอง</a></li>
+                        <li className="active"><a href="/Profile"> ข้อมูลส่วนตัว</a></li>
+                        <li><a href="/Settings"> ตั้งค่า</a></li>
+                        <li className="logout"><a href="/login"> ออกจากระบบ</a></li>
                     </ul>
                 </nav>
             </aside>
@@ -50,6 +50,7 @@ function Wallet() {
                             </thead>
                             <tbody>
                                 <tr>
+                                        
                                 </tr>
                             </tbody>
                         </table>

@@ -19,3 +19,12 @@ app.use('/api/users', userRoutes);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+export const getSpaces = async () => {
+    const response = await fetch('http://localhost:5000/api/spaces');
+    if (!response.ok) {
+      throw new Error('Failed to fetch spaces');
+    }
+    const data = await response.json();
+    return data;
+  };
