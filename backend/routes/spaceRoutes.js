@@ -1,6 +1,5 @@
-// routes/spaceRoutes.js
 const express = require('express');
-const Space = require('../models/space'); 
+const Space = require('./models/space'); 
 
 
 const router = express.Router();

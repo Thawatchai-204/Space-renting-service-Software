@@ -10,7 +10,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: #000000;
+    background-color: #000000; /* สีฟ้าเข้ม */
     color: white;
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@ body {
     width: 100%;
     padding: 15px;
     border-radius: 10px;
-    background-color: #176B87;
+    background-color: #176B87; /* สีฟ้าสดใส */
     transition: background-color 0.3s ease;
 }
 
@@ -51,11 +51,11 @@ body {
 }
 
 .sidebar nav ul li a:hover {
-    background-color: #000000;
+    background-color: #000000; /* สีฟ้าเข้ม */
 }
 
 .sidebar nav ul li.active a {
-    background-color: #64CCC5;
+    background-color: #64CCC5; /* สีฟ้าอ่อน */
     font-weight: bold;
 }
 
@@ -106,70 +106,94 @@ header .user-info .user-balance {
     color: white;
 }
 
-.profile-section {
+.management-section {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.management-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.content {
+    display: flex;
+    flex: 1;
     gap: 20px;
 }
 
-.profile-section img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
+.main-content-section {
+    flex: 3;
 }
 
-.profile-section .profile-info {
+.ready-to-reserve h2 {
+    margin-bottom: 20px;
+}
+
+.storage-options {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.storage-option {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+}
+
+.storage-option img {
     width: 100%;
-    max-width: 600px;
-}
-
-.profile-section .profile-info label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.profile-section .profile-info .profile-item {
-    display: flex;
-    align-items: center;
-}
-
-.profile-section .profile-info .profile-edit {
-    display: flex;
-    align-items: center;
-    width: 100%;
+    border-radius: 10px;
     margin-bottom: 10px;
 }
 
-.profile-section .profile-info .profile-edit input {
-    flex: 1;
+.filter-section {
+    width: 250px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section h2 {
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-right: 10px;
 }
 
-.profile-section .profile-info .edit-button {
-    background-color: #64CCC5;
-    border: none;
+.apply-button {
+    width: 100%;
     padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
+    font-size: 16px;
+    background-color: #176B87; /* สีฟ้าสดใส */
     color: white;
-}
-
-.profile-section .save-button {
-    background-color: #176B87;
-    color: white;
-    padding: 15px 30px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 18px;
-    margin-top: 20px;
 }

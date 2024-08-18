@@ -17,7 +17,7 @@ import TopupEN from './pages/EN/Service_users/Topup';
 import RateitEN from './pages/EN/Service_users/Rateit';
 import ManageSpaceEN from './pages/EN/Service_users/Managespace';
 import DetailsEN from './pages/EN/Service_users/Details';
-import AddspaceEN from './pages/EN/Service_users/Addspace';
+import Addspace from './pages/EN/Service_users/Addspace';
 
 
 import ReserveTH from './pages/TH/Service_users/Reserve';
@@ -29,7 +29,7 @@ import TopupTH from './pages/TH/Service_users/Topup';
 import RateitTH from './pages/TH/Service_users/Rateit';
 import ManageSpaceTH from './pages/TH/Service_users/Managespace';
 import DetailsTH from './pages/TH/Service_users/Details';
-import AddspaceTH from './pages/TH/Service_users/Addspace';
+import DetailsTH from './pages/TH/Service_users/Addspace';
 
 /*End Service users*/
 

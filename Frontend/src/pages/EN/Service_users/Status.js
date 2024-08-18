@@ -50,7 +50,7 @@ function Home() {
                 <section className="content">
                     <div className="main-content-section">
                         <div className="management-section">
-                            <button className="management-button">Status</button>
+                            <button className="management-button"><li><a href="/Status"><span className="user-name">Status</span></a></li></button>
                             <button className="management-button">Reserved</button>
                             <button className="management-button">Promotion</button>
                         </div>

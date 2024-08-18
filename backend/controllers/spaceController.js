@@ -1,4 +1,4 @@
-const Space = require('../models/space');
+const Space = require('./models/space');
 
 // สร้างพื้นที่เช่าใหม่
 exports.createSpace = async (req, res) => {

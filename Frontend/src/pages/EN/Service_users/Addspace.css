@@ -1,0 +1,186 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+.reserve-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 100%;
+    background-color: #000000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px; /* Adjusted padding */
+}
+
+.sidebar .logo img {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    width: 100%;
+    margin-bottom: 15px; /* Adjusted margin */
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px; /* Adjusted padding */
+    border-radius: 10px;
+    background-color: #176B87;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar nav ul li a svg {
+    margin-right: 10px;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #000000;
+}
+
+.sidebar nav ul li.active a {
+    background-color: #64CCC5;
+    font-weight: bold;  
+}
+
+.sidebar nav ul li.logout a {
+    background-color: #e74c3c;
+}
+
+.main-content {
+    flex: 1;
+    padding: 10px; /* Adjusted padding */
+    background-color: #f1ecec;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Added for scrollable content */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; /* Adjusted margin */
+}
+
+header .user-info {
+    display: flex;
+    align-items: center;
+}
+
+header .user-info .notification-icon {
+    margin-right: 15px; /* Adjusted margin */
+    font-size: 20px;
+}
+
+header .user-info .user-name {
+    margin-right: 10px;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reserve-form {
+    background-color: #FFFFFF;
+    padding: 20px; /* Adjusted padding */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+}
+
+.reserve-form .form-group {
+    margin-bottom: 10px; /* Adjusted margin */
+}
+
+.reserve-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.reserve-form .form-group input[type="text"],
+.reserve-form .form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.reserve-form .form-group-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjusted gap */
+}
+
+.reserve-form .save-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #176B87;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.reserve-form .cancel-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #ccc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Media Queries for responsive design */
+@media (min-width: 768px) {
+    .reserve-container {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        padding: 20px; /* Increased padding for larger screens */
+    }
+
+    .main-content {
+        padding: 20px; /* Increased padding for larger screens */
+    }
+
+    .reserve-form .form-group-inline {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .reserve-form .form-group-inline .form-group {
+        width: 48%;
+    }
+}

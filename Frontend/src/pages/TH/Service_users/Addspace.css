@@ -1,0 +1,159 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.reserve-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #000000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.sidebar .logo img {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #176B87;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar nav ul li a svg {
+    margin-right: 10px;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #000000;
+}
+
+.sidebar nav ul li.active a {
+    background-color: #64CCC5;
+    font-weight: bold;  
+}
+
+.sidebar nav ul li.logout a {
+    background-color: #e74c3c;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f1ecec;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+header .user-info {
+    display: flex;
+    align-items: center;
+}
+
+header .user-info .notification-icon {
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+header .user-info .user-name {
+    margin-right: 10px;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reserve-form {
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.reserve-form .form-group {
+    margin-bottom: 15px;
+}
+
+.reserve-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.reserve-form .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.reserve-form .form-group-inline {
+    display: flex;
+    justify-content: space-between;
+}
+
+.reserve-form .form-group-inline .form-group {
+    width: 48%;
+}
+
+.reserve-form .save-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #176B87;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.reserve-form .cancel-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #ccc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

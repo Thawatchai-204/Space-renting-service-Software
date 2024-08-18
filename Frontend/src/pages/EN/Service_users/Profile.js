@@ -42,11 +42,15 @@ function Profile() {
                 </div>
                 <nav>
                     <ul>
+
                         <li><a href="/Home"><FaHome /> Home</a></li>
                         <li><a href="/Reserve"><FaCalendarAlt /> Reserve</a></li>
-                        <li className="active"><a href="/Profile"><FaUser /> Profile</a></li>
+                        <li><a href="/Addspace"><FaCalendarAlt /> Add space</a></li>
+                        <li><a href="/Managespace"><FaCalendarAlt /> Manage space</a></li>
+                        <li><a href="/Profile"><FaUser /> Profile</a></li>
                         <li><a href="/Settings"><FaCog /> Settings</a></li>
                         <li className="logout"><a href="/login"><FaSignOutAlt /> Log out</a></li>
+
                     </ul>
                 </nav>
             </aside>

@@ -29,6 +29,8 @@ function Home() {
                     <ul>
                         <li className="active"><a href="/Home"><FaHome /> Home</a></li>
                         <li><a href="/Reserve"><FaCalendarAlt /> Reserve</a></li>
+                        <li><a href="/Addspace"><FaCalendarAlt /> Add space</a></li>
+                        <li><a href="/Managespace"><FaCalendarAlt /> Manage space</a></li>
                         <li><a href="/Profile"><FaUser /> Profile</a></li>
                         <li><a href="/Settings"><FaCog /> Settings</a></li>
                         <li className="logout"><a href="/login"><FaSignOutAlt /> Log out</a></li>
@@ -50,7 +52,7 @@ function Home() {
                 <section className="content">
                     <div className="main-content-section">
                         <div className="management-section">
-                            <button className="management-button">Status</button>
+                            <button className="management-button"><li><a href="/Status"><span className="user-name">Status</span></a></li></button>
                             <button className="management-button">Reserved</button>
                             <button className="management-button">Promotion</button>
                         </div>
