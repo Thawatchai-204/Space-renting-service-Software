@@ -15,7 +15,6 @@ export const loginUser = (userData) => api.post('/users/login', userData);
 
 // ฟังก์ชันสำหรับค้นหาพื้นที่
 export const searchSpaces = async (query) => {
-  // เขียนโค้ดสำหรับการค้นหาพื้นที่ที่นี่
   const response = await fetch(`/api/spaces?search=${query}`);
   if (!response.ok) {
       throw new Error('Network response was not ok');
