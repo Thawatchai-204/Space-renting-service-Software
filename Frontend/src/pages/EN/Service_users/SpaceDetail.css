@@ -1,0 +1,13 @@
+.space-detail-container {
+    padding: 20px;
+}
+
+.space-detail-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.space-detail-container h1 {
+    margin-bottom: 10px;
+}

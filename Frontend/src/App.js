@@ -18,6 +18,8 @@ import RateitEN from './pages/EN/Service_users/Rateit';
 import ManageSpaceEN from './pages/EN/Service_users/Managespace';
 import DetailsEN from './pages/EN/Service_users/Details';
 import AddspaceEN from './pages/EN/Service_users/Addspace';
+import ReserveFormEN from './pages/EN/Service_users/ReserveForm'; 
+
 
 
 import ReserveTH from './pages/TH/Service_users/Reserve';
@@ -80,6 +82,7 @@ function App() {
             <Route path="/details" element={<DetailsEN />} />
             <Route path="/manageSpace" element={<ManageSpaceEN />} />
             <Route path="/addspace" element={<AddspaceEN />} />
+            <Route path="/reserveform" element={<ReserveFormEN />} />
           </>
         ) : (
           <>
