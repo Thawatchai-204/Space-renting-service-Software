@@ -1,7 +1,8 @@
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden; /* Prevent horizontal overflow */
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f7;
+    overflow-x: hidden;
 }
 
 .reserve-container {
@@ -12,17 +13,18 @@ body {
 
 .sidebar {
     width: 100%;
-    background-color: #000000;
+    background-color: #1b1f3a;
     color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px; /* Adjusted padding */
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar .logo img {
     width: 80%;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .sidebar nav ul {
@@ -33,7 +35,7 @@ body {
 
 .sidebar nav ul li {
     width: 100%;
-    margin-bottom: 15px; /* Adjusted margin */
+    margin-bottom: 15px;
 }
 
 .sidebar nav ul li a {
@@ -42,9 +44,9 @@ body {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 10px; /* Adjusted padding */
-    border-radius: 10px;
-    background-color: #176B87;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #2a2f4a;
     transition: background-color 0.3s ease;
 }
 
@@ -53,12 +55,12 @@ body {
 }
 
 .sidebar nav ul li a:hover {
-    background-color: #000000;
+    background-color: #404574;
 }
 
 .sidebar nav ul li.active a {
-    background-color: #64CCC5;
-    font-weight: bold;  
+    background-color: #5ea5a8;
+    font-weight: bold;
 }
 
 .sidebar nav ul li.logout a {
@@ -67,32 +69,22 @@ body {
 
 .main-content {
     flex: 1;
-    padding: 10px; /* Adjusted padding */
-    background-color: #f1ecec;
+    padding: 20px;
+    background-color: #f0f4f7;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Added for scrollable content */
+    overflow-y: auto;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px; /* Adjusted margin */
+    margin-bottom: 20px;
 }
 
-header .user-info {
-    display: flex;
-    align-items: center;
-}
-
-header .user-info .notification-icon {
-    margin-right: 15px; /* Adjusted margin */
-    font-size: 20px;
-}
-
-header .user-info .user-name {
-    margin-right: 10px;
+header h1 {
+    color: #333;
 }
 
 .content {
@@ -103,61 +95,85 @@ header .user-info .user-name {
 }
 
 .reserve-form {
-    background-color: #FFFFFF;
-    padding: 20px; /* Adjusted padding */
+    background-color: #ffffff;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 500px;
-    margin: auto;
-}
-
-.reserve-form .form-group {
-    margin-bottom: 10px; /* Adjusted margin */
-}
-
-.reserve-form .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.reserve-form .form-group input[type="text"],
-.reserve-form .form-group input[type="file"] {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    max-width: 600px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px; /* เพิ่มระยะห่างระหว่างกลุ่ม */
 }
 
-.reserve-form .form-group-inline {
+.form-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px; /* เพิ่มระยะห่างระหว่างช่องกรอกข้อมูล */
+}
+
+.form-group {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Adjusted gap */
 }
 
-.reserve-form .save-button {
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+    border-color: #176B87;
+    outline: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.save-button,
+.cancel-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button {
     background-color: #176B87;
     color: white;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
 }
 
-.reserve-form .cancel-button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
+.save-button:hover {
+    background-color: #139cb5;
+}
+
+.cancel-button {
     background-color: #ccc;
     color: white;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+}
+
+.cancel-button:hover {
+    background-color: #bbb;
 }
 
 /* Media Queries for responsive design */
@@ -168,19 +184,10 @@ header .user-info .user-name {
 
     .sidebar {
         width: 250px;
-        padding: 20px; /* Increased padding for larger screens */
+        padding: 20px;
     }
 
     .main-content {
-        padding: 20px; /* Increased padding for larger screens */
-    }
-
-    .reserve-form .form-group-inline {
-        flex-direction: row;
-        gap: 15px;
-    }
-
-    .reserve-form .form-group-inline .form-group {
-        width: 48%;
+        padding-left: 20px;
     }
 }

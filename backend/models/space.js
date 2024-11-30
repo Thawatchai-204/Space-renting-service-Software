@@ -1,16 +1,15 @@
-// backend/models/Space.js
 const mongoose = require('mongoose');
 
+// Space schema definition
 const spaceSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  advertisingWords: { type: String },
+  advertisingWords: { type: String, required: true },
   address: { type: String, required: true },
-  types: { type: String },
-  size: { type: String },
+  types: { type: String, required: true },
+  size: { type: String, required: true },
   price: { type: Number, required: true },
-  image: { type: String }, // สำหรับเก็บพาธของรูปภาพที่อัพโหลด
+  image: { type: String, required: true },
 });
 
-const Space = mongoose.model('Space', spaceSchema);
-
-module.exports = Space;
+// ตรวจสอบว่ามีโมเดล Space อยู่แล้วหรือยัง
+module.exports = mongoose.models.Space || mongoose.model('Space', spaceSchema);

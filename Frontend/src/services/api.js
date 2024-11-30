@@ -23,3 +23,4 @@ export const searchSpaces = async (query) => {
 };
 
 export default api;
+

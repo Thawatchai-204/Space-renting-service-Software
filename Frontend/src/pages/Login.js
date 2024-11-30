@@ -40,7 +40,6 @@ function Login() {
         <img src="https://i0.wp.com/storage.googleapis.com/fplswordpressblog/2024/04/4-10.png?resize=1024%2C1024&ssl=1" alt="Space renting" />
       </div>
       <div className="login-right">
-        <a href="/home">Skip</a>
         <h1>Login</h1>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -62,12 +61,6 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </div>
-          <div className="social-login">
-            <button type="button" className="social-button facebook">Facebook</button>
-            <button type="button" className="social-button google">Gmail</button>
-            <button type="button" className="social-button apple">Apple</button>
-            <button type="button" className="social-button line">LINE</button>
           </div>
           <div className="remember-me">
             <input type="checkbox" id="remember-me" />

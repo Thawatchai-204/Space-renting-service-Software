@@ -90,10 +90,10 @@ function Home() {
         <div className="home-container">
             {/* Sidebar */}
             <aside className="sidebar">
-                <div className="logo">
+            <div className="logo">
                     <li>
                         <a href="/Home">
-                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" />
+                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/backend/img/logoSRSS.png" alt="Logo" />
                         </a>
                     </li>
                 </div>

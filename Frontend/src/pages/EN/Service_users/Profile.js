@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import { FaHome, FaCalendarAlt, FaUser, FaCog, FaSignOutAlt, FaEdit } from 'react-icons/fa';
+import axios from 'axios';
 
 function Profile() {
-    const [name, setName] = useState("jusmean jojo");
-    const [email, setEmail] = useState("jusmean_jojo@psu.pre.project.com");
-    const [phone, setPhone] = useState("xxx-xxx-xxxx");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const [isEditingName, setIsEditingName] = useState(false);
     const [isEditingEmail, setIsEditingEmail] = useState(false);
     const [isEditingPhone, setIsEditingPhone] = useState(false);
     const [isConfirmingPassword, setIsConfirmingPassword] = useState(false);
+
+    // Fetch user data from backend when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                // Replace this with your API endpoint and add user authentication (token, etc.)
+                const response = await axios.get('/api/profile'); // Example: '/api/profile'
+                
+                const { name, email, phone } = response.data; // Adjust based on your API response
+                setName(name);
+                setEmail(email);
+                setPhone(phone);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handleSave = () => {
         if (!confirmPassword) {
@@ -24,7 +44,23 @@ function Profile() {
         setIsEditingPhone(false);
         setIsConfirmingPassword(false);
         setConfirmPassword("");
-        // Add save logic here if necessary (e.g., API calls)
+
+        // Make API call to save updated user data (if necessary)
+        const updateUserData = async () => {
+            try {
+                const response = await axios.put('/api/profile', {
+                    name,
+                    email,
+                    phone,
+                    confirmPassword
+                });
+                console.log(response.data.message); // Show success message
+            } catch (error) {
+                console.error('Error updating user data:', error);
+            }
+        };
+
+        updateUserData();
     };
 
     const startEditing = (editType) => {
@@ -38,19 +74,20 @@ function Profile() {
         <div className="home-container">
             <aside className="sidebar">
                 <div className="logo">
-                    <li><a href="/Home"><img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/main/Screenshot%202024-07-26%20013811.png" alt="Logo" /></a></li>
+                    <li>
+                        <a href="/Home">
+                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/backend/img/logoSRSS.png" alt="Logo" />
+                        </a>
+                    </li>
                 </div>
                 <nav>
                     <ul>
-
                         <li><a href="/Home"><FaHome /> Home</a></li>
-                        <li><a href="/Reserve"><FaCalendarAlt /> Reserve</a></li>
                         <li><a href="/Addspace"><FaCalendarAlt /> Add space</a></li>
                         <li><a href="/Managespace"><FaCalendarAlt /> Manage space</a></li>
-                        <li><a href="/Profile"><FaUser /> Profile</a></li>
+                        <li className="active"><a href="/Profile"><FaUser /> Profile</a></li>
                         <li><a href="/Settings"><FaCog /> Settings</a></li>
                         <li className="logout"><a href="/login"><FaSignOutAlt /> Log out</a></li>
-
                     </ul>
                 </nav>
             </aside>
@@ -67,20 +104,6 @@ function Profile() {
                     <img src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745" alt="Profile" />
                     <div className="profile-info">
                         <div className="profile-item">
-                            <label>Change Name</label>
-                            <div className="profile-edit">
-                                <input 
-                                    type="text" 
-                                    value={name} 
-                                    onChange={(e) => setName(e.target.value)} 
-                                    disabled={!isEditingName}
-                                />
-                                <button className="edit-button" onClick={() => startEditing("name")}>
-                                    <FaEdit />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="profile-item">
                             <label>Change E-mail</label>
                             <div className="profile-edit">
                                 <input 
@@ -90,6 +113,20 @@ function Profile() {
                                     disabled={!isEditingEmail}
                                 />
                                 <button className="edit-button" onClick={() => startEditing("email")}>
+                                    <FaEdit />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="profile-item">
+                            <label>Change Name</label>
+                            <div className="profile-edit">
+                                <input 
+                                    type="text" 
+                                    value={name} 
+                                    onChange={(e) => setName(e.target.value)} 
+                                    disabled={!isEditingName}
+                                />
+                                <button className="edit-button" onClick={() => startEditing("name")}>
                                     <FaEdit />
                                 </button>
                             </div>
@@ -109,7 +146,6 @@ function Profile() {
                             </div>
                         </div>
                         
-             
                         {isConfirmingPassword && (
                             <div className="profile-item">
                                 <label>Confirm Password</label>

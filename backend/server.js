@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, required: true },
+  walletBalance: { type: Number, default: 0 }, // เพิ่มฟิลด์ walletBalance
 });
 
 // User model
@@ -191,26 +192,29 @@ app.get('/api/user-bookings/:userId', async (req, res) => {
   }
 });
 
-app.get('/api/spaces', async (req, res) => {
+// Wallet routes
+app.get('/api/wallet/:userId', async (req, res) => {
   try {
-    const spaces = await Space.find();
-    res.status(200).json(spaces);
-  } catch (error) {
-    console.error('Error fetching spaces:', error);
-    res.status(500).json({ success: false, message: 'Error fetching spaces', error: error.message });
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).send('ไม่พบผู้ใช้งาน');
+    res.json({ balance: user.walletBalance });
+  } catch (err) {
+    res.status(500).send(err.message);
   }
 });
 
-app.get('/api/spaces/:id', async (req, res) => {
+app.put('/api/wallet/:userId', async (req, res) => {
   try {
-    const space = await Space.findById(req.params.id);
-    if (!space) {
-      return res.status(404).json({ message: 'Space not found' });
-    }
-    res.status(200).json(space);
-  } catch (error) {
-    console.error('Error fetching space:', error);
-    res.status(500).json({ success: false, message: 'Error fetching space', error: error.message });
+    const { amount } = req.body;
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).send('ไม่พบผู้ใช้งาน');
+
+    // Update wallet balance
+    user.walletBalance += amount;
+    await user.save();
+    res.json({ balance: user.walletBalance });
+  } catch (err) {
+    res.status(500).send(err.message);
   }
 });
 
@@ -218,3 +222,88 @@ app.get('/api/spaces/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+const bookingRoutes = require('./routes/bookingRoutes');
+app.use('/api/bookings', bookingRoutes);
+
+// Route for booking a space
+app.post('/api/reserve', async (req, res) => {
+  const { spaceId, userId, date, time } = req.body;
+
+  // Log input data to see if they are received correctly
+  console.log('spaceId:', spaceId, 'userId:', userId, 'date:', date, 'time:', time);
+
+  // Check for missing fields
+  if (!spaceId || !userId || !date || !time) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+
+  try {
+    // Check if there is already a booking for the same time slot
+    const existingBooking = await Booking.findOne({ spaceId, date, time });
+    
+    // Log the result of booking check
+    console.log('Existing Booking:', existingBooking);
+
+    if (existingBooking) {
+      return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+    }
+
+    // Create a new booking
+    const newBooking = new Booking({
+      spaceId,
+      userId,
+      date,
+      time,
+    });
+
+    await newBooking.save();
+    res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+  } catch (error) {
+    console.error('Error saving booking:', error);
+    res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
+  }
+});
+
+// Route for booking a space
+app.post('/api/reserve', async (req, res) => {
+  const { spaceId, userId, date, time } = req.body;
+
+  // Log ข้อมูลที่ส่งมาจาก Frontend
+  console.log('Received from Frontend:', { spaceId, userId, date, time });
+
+  if (!spaceId || !userId || !date || !time) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+
+  try {
+    // ตรวจสอบว่ามีการจองในเวลาเดียวกันหรือไม่
+    const existingBooking = await Booking.findOne({ spaceId, date, time });
+    if (existingBooking) {
+      return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+    }
+
+    // ถ้าไม่มีการจองซ้ำ สร้างการจองใหม่
+    const newBooking = new Booking({
+      spaceId,
+      userId,
+      date,
+      time,
+    });
+
+    await newBooking.save(); // บันทึกข้อมูลลง MongoDB
+
+    // Log ข้อมูลการจองที่บันทึก
+    console.log('Booking saved:', newBooking);
+
+    res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+  } catch (error) {
+    console.error('Error saving booking:', error);
+    res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
+  }
+
+  const reservationRoutes = require('./routes/reservationRoutes');
+  app.use('/api/reservations', reservationRoutes);
+
+});
+
