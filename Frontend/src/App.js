@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import HomeEN from './pages/EN/Service_users/Home';
@@ -6,6 +7,7 @@ import Register from './pages/Register';
 import LoginTH from './pages/LoginTH';
 import RegisterTH from './pages/RegisterTH';
 import HomeTH from './pages/TH/Service_users/Home';
+import Reservations from './pages/EN/Service_users/Reservations';
 
 /*Start Service users*/
 import ReserveEN from './pages/EN/Service_users/Reserve';
@@ -83,6 +85,7 @@ function App() {
             <Route path="/manageSpace" element={<ManageSpaceEN />} />
             <Route path="/addspace" element={<AddspaceEN />} />
             <Route path="/reserveform" element={<ReserveFormEN />} />
+            <Route path="/reservations" element={<Reservations />} />
             
           </>
         ) : (

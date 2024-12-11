@@ -22,5 +22,9 @@ export const searchSpaces = async (query) => {
   return response.json();
 };
 
+
+
+
+
 export default api;
 

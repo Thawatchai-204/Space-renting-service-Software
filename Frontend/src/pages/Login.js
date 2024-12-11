@@ -20,6 +20,8 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token); // Save JWT token in local storage
+        localStorage.setItem('userId', data.userId); // Save userId in local storage
+        localStorage.setItem('username', data.username); // Save username in local storage (if available)
         alert('Login successful');
         // Redirect to home or another page
         window.location.href = '/home';

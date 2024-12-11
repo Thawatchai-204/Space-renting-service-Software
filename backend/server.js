@@ -307,3 +307,80 @@ app.post('/api/reserve', async (req, res) => {
 
 });
 
+app.delete('/api/spaces/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedSpace = await Space.findByIdAndDelete(id); // ลบพื้นที่ด้วย `_id`
+    if (!deletedSpace) {
+      return res.status(404).json({ success: false, message: 'Space not found' });
+    }
+    res.status(200).json({ success: true, message: 'Space deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting space:', error);
+    res.status(500).json({ success: false, message: 'Error deleting space' });
+  }
+});
+
+app.get('/api/bookings/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const bookings = await Booking.find({ userId }).populate('spaceId'); // ใช้ populate เพื่อดึงข้อมูลพื้นที่
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ success: false, message: 'Error fetching bookings' });
+  }
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB Connected:', mongoose.connection.name);
+});
+
+app.post('/api/reserve', async (req, res) => {
+  const { spaceId, userId, date, time } = req.body;
+
+  console.log('Request Data:', { spaceId, userId, date, time }); // Log ข้อมูลที่ส่งมา
+
+  if (!spaceId || !userId || !date || !time) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+
+  try {
+      const existingBooking = await Booking.findOne({ spaceId, date, time });
+      if (existingBooking) {
+          return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+      }
+
+      const newBooking = new Booking({ spaceId, userId, date, time });
+      await newBooking.save();
+      res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+  } catch (error) {
+      console.error('Error saving booking:', error);
+      res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+});
+
+app.post('/api/reserve', async (req, res) => {
+    const { spaceId, userId, date, time } = req.body;
+
+    console.log('Received reservation request:', { spaceId, userId, date, time });
+
+    if (!spaceId || !userId || !date || !time) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    try {
+        const existingBooking = await Booking.findOne({ spaceId, date, time });
+        if (existingBooking) {
+            return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+        }
+
+        const newBooking = new Booking({ spaceId, userId, date, time });
+        await newBooking.save();
+        res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+    } catch (error) {
+        console.error('Error saving booking:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+

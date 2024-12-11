@@ -1,0 +1,35 @@
+.reservations-container {
+    display: flex;
+}
+
+.sidebar {
+    width: 20%;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.main-content {
+    width: 80%;
+    padding: 20px;
+}
+
+.reservation-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.reservation-item {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.reservation-item h3 {
+    margin: 0 0 10px 0;
+}
+
+.reservation-item p {
+    margin: 5px 0;
+}

@@ -5,18 +5,38 @@ import axios from 'axios';
 
 function Home() {
     const [spaces, setSpaces] = useState([]);
-    const [isCollapsed, setIsCollapsed] = useState(true);
     const [selectedSpace, setSelectedSpace] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [username, setUsername] = useState('');
+    const [userId, setUserId] = useState(null);
+    const [reservationDate, setReservationDate] = useState('');
+    const [reservationTime, setReservationTime] = useState('');
 
     useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        console.log('Loaded userId from localStorage:', storedUserId); // Debug
+        if (storedUserId) {
+            setUserId(storedUserId);
+        } else {
+            console.error('userId not found in localStorage');
+        }
+    }, []);
+    
+    
+    // Load user data from localStorage
+    useEffect(() => {
         const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            setUsername(storedUsername);
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUsername) setUsername(storedUsername);
+        if (storedUserId) {
+            console.log('User ID from localStorage:', storedUserId);
+            setUserId(storedUserId);
+        } else {
+            console.error('User ID not found in localStorage');
         }
     }, []);
 
+    // Fetch spaces from the backend
     useEffect(() => {
         const fetchSpaces = async () => {
             try {
@@ -37,17 +57,55 @@ function Home() {
 
     const closeModal = () => {
         setSelectedSpace(null);
+        setReservationDate('');
+        setReservationTime('');
         setIsModalOpen(false);
     };
 
-    const handleReserve = () => {
-        // Logic for reservation can be implemented here
-        alert(`Reserved ${selectedSpace.name}!`);
+
+    
+    const handleReserve = async () => {
+        if (!userId) {
+            alert('User ID not found. Please log in again.');
+            return;
+        }
+    
+        if (!reservationDate || !reservationTime) {
+            alert('Please select a date and time for the reservation.');
+            return;
+        }
+    
+        console.log('Sending reservation data:', {
+            spaceId: selectedSpace._id,
+            userId: userId,
+            date: reservationDate,
+            time: reservationTime,
+        });
+    
+        try {
+            const response = await axios.post('http://localhost:5000/api/reserve', {
+                spaceId: selectedSpace._id,
+                userId: userId,
+                date: reservationDate,
+                time: reservationTime,
+            });
+    
+            if (response.data.success) {
+                alert(`Successfully reserved ${selectedSpace.name}!`);
+                closeModal();
+            } else {
+                alert(response.data.message || 'Failed to reserve space.');
+            }
+        } catch (error) {
+            console.error('Failed to reserve space:', error);
+            alert('Failed to reserve space.');
+        }
     };
+    
+    
 
     return (
         <div className="home-container">
-            {/* Sidebar */}
             <aside className="sidebar">
                 <div className="logo">
                     <li>
@@ -68,7 +126,6 @@ function Home() {
                 </nav>
             </aside>
 
-            {/* Main Content */}
             <main className="main-content">
                 <header>
                     <h1>Home</h1>
@@ -77,7 +134,7 @@ function Home() {
                     </div>
                     <div className="user-info">
                         <span className="notification-icon">🔔</span>
-                        <li><a href="/Profile"><span className="user-name">{username ? username : 'User'}</span></a></li>
+                        <li><a href="/Profile"><span className="user-name">{username || 'User'}</span></a></li>
                         <li><a href="/Wallet"><span className="user-balance">Wallet</span></a></li>
                     </div>
                 </header>
@@ -102,46 +159,9 @@ function Home() {
                             )}
                         </div>
                     </div>
-
-                    {/* Filter Section */}
-                    <aside className={`filter-section ${isCollapsed ? 'collapsed' : ''}`}>
-                        <button className="toggle-filter" onClick={() => setIsCollapsed(!isCollapsed)}>
-                            {isCollapsed ? 'Show Filters' : 'Hide Filters'}
-                        </button>
-                        <div className={`filter-content ${isCollapsed ? 'hidden' : ''}`}>
-                            <h2>Filter</h2>
-                            <div className="filter-group">
-                                <label>Price</label>
-                                <select>
-                                    <option value="">All</option>
-                                    <option value="less-500">Less than 500 baht</option>
-                                    <option value="less-1000">Less than 1000 baht</option>
-                                    <option value="more-1000">More than 1000 baht</option>
-                                </select>
-                            </div>
-                            <div className="filter-group">
-                                <label>Types</label>
-                                <select>
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div className="filter-group">
-                                <label>Size</label>
-                                <select>
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div className="filter-group">
-                                <label>Start-End Date</label>
-                                <input type="date" />
-                            </div>
-                            <button className="apply-button">Apply</button>
-                        </div>
-                    </aside>
                 </section>
             </main>
 
-            {/* Modal สำหรับแสดงรายละเอียดพื้นที่ */}
             {isModalOpen && selectedSpace && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -151,12 +171,31 @@ function Home() {
                         <p>{selectedSpace.advertisingWords}</p>
                         <p>{selectedSpace.address}</p>
                         <p>Price: {selectedSpace.price} THB</p>
+
+                        <div>
+                            <label>Select Date:</label>
+                            <input
+                                type="date"
+                                value={reservationDate}
+                                onChange={(e) => setReservationDate(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label>Select Time:</label>
+                            <input
+                                type="time"
+                                value={reservationTime}
+                                onChange={(e) => setReservationTime(e.target.value)}
+                            />
+                        </div>
+
                         <button onClick={handleReserve} className="reserve-button">Reserve</button>
                     </div>
                 </div>
             )}
         </div>
     );
+    
 }
 
 export default Home;
