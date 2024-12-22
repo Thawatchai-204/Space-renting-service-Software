@@ -9,12 +9,17 @@ function ManageSpace() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [username, setUsername] = useState('');
     const [newImage, setNewImage] = useState(null);
-    const [editedName, setEditedName] = useState('');
-    const [editedAdvertisingWords, setEditedAdvertisingWords] = useState('');
-    const [editedAddress, setEditedAddress] = useState('');
-    const [editedTypes, setEditedTypes] = useState('');
-    const [editedSize, setEditedSize] = useState('');
-    const [editedPrice, setEditedPrice] = useState('');
+    const [formData, setFormData] = useState({
+        name: '',
+        advertisingWords: '',
+        address: '',
+        types: '',
+        size: '',
+        pricePerHour: '',
+        pricePerDay: '',
+        pricePerWeek: '',
+        pricePerMonth: '',
+    });
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -38,12 +43,17 @@ function ManageSpace() {
 
     const openModal = (space) => {
         setSelectedSpace(space);
-        setEditedName(space.name);
-        setEditedAdvertisingWords(space.advertisingWords);
-        setEditedAddress(space.address);
-        setEditedTypes(space.types);
-        setEditedSize(space.size);
-        setEditedPrice(space.price);
+        setFormData({
+            name: space.name,
+            advertisingWords: space.advertisingWords,
+            address: space.address,
+            types: space.types,
+            size: space.size,
+            pricePerHour: space.pricePerHour || '',
+            pricePerDay: space.pricePerDay || '',
+            pricePerWeek: space.pricePerWeek || '',
+            pricePerMonth: space.pricePerMonth || '',
+        });
         setIsModalOpen(true);
     };
 
@@ -52,26 +62,31 @@ function ManageSpace() {
         setIsModalOpen(false);
     };
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
     const handleImageChange = (e) => {
         setNewImage(e.target.files[0]);
     };
 
     const handleSaveChanges = async () => {
-        const formData = new FormData();
+        const updatedData = new FormData();
 
-        // Append edited values
+        Object.keys(formData).forEach((key) => {
+            updatedData.append(key, formData[key]);
+        });
+
         if (newImage) {
-            formData.append('image', newImage);
+            updatedData.append('image', newImage);
         }
-        formData.append('name', editedName);
-        formData.append('advertisingWords', editedAdvertisingWords);
-        formData.append('address', editedAddress);
-        formData.append('types', editedTypes);
-        formData.append('size', editedSize);
-        formData.append('price', editedPrice);
 
         try {
-            await axios.put(`http://localhost:5000/api/spaces/${selectedSpace._id}`, formData, {
+            await axios.put(`http://localhost:5000/api/spaces/${selectedSpace._id}`, updatedData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -80,15 +95,17 @@ function ManageSpace() {
             const response = await axios.get('http://localhost:5000/api/spaces');
             setSpaces(response.data);
             closeModal();
+            alert('Space updated successfully!');
         } catch (error) {
             console.error('Error updating space:', error);
+            alert('Failed to update space.');
         }
     };
 
     const handleDeleteSpace = async (spaceId) => {
         try {
             await axios.delete(`http://localhost:5000/api/spaces/${spaceId}`);
-            setSpaces(spaces.filter((space) => space._id !== spaceId)); // อัปเดต UI หลังลบ
+            setSpaces(spaces.filter((space) => space._id !== spaceId)); // Update UI after deletion
             alert('Space deleted successfully!');
         } catch (error) {
             console.error('Error deleting space:', error);
@@ -98,7 +115,6 @@ function ManageSpace() {
 
     return (
         <div className="home-container">
-            {/* Sidebar */}
             <aside className="sidebar">
                 <div className="logo">
                     <li>
@@ -146,7 +162,6 @@ function ManageSpace() {
                 </nav>
             </aside>
 
-            {/* Main Content */}
             <main className="main-content">
                 <header>
                     <h1>Manage Spaces</h1>
@@ -184,7 +199,10 @@ function ManageSpace() {
                                         <p>{space.address}</p>
                                         <p>Types: {space.types}</p>
                                         <p>Size: {space.size}</p>
-                                        <p>Price: {space.price} THB</p>
+                                        <p>Price Per Hour: {space.pricePerHour || 'N/A'} THB</p>
+                                        <p>Price Per Day: {space.pricePerDay || 'N/A'} THB</p>
+                                        <p>Price Per Week: {space.pricePerWeek || 'N/A'} THB</p>
+                                        <p>Price Per Month: {space.pricePerMonth || 'N/A'} THB</p>
                                         <button
                                             onClick={() => openModal(space)}
                                             className="details-link"
@@ -207,7 +225,6 @@ function ManageSpace() {
                 </section>
             </main>
 
-            {/* Modal สำหรับแก้ไขข้อมูล */}
             {isModalOpen && selectedSpace && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -215,63 +232,86 @@ function ManageSpace() {
                             ✖
                         </button>
                         <h2>Edit {selectedSpace.name}</h2>
-                        <img
-                            src={`http://localhost:5000/uploads/${selectedSpace.image}`}
-                            alt={selectedSpace.name}
-                        />
                         <input type="file" onChange={handleImageChange} accept="image/*" />
                         <div>
                             <label>Name area:</label>
                             <input
                                 type="text"
-                                value={editedName}
-                                onChange={(e) => setEditedName(e.target.value)}
-                                placeholder="Edit Name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div>
                             <label>Advertising words:</label>
                             <input
                                 type="text"
-                                value={editedAdvertisingWords}
-                                onChange={(e) => setEditedAdvertisingWords(e.target.value)}
-                                placeholder="Edit Advertising Words"
+                                name="advertisingWords"
+                                value={formData.advertisingWords}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div>
                             <label>Address:</label>
                             <input
                                 type="text"
-                                value={editedAddress}
-                                onChange={(e) => setEditedAddress(e.target.value)}
-                                placeholder="Edit Address"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div>
                             <label>Types:</label>
                             <input
                                 type="text"
-                                value={editedTypes}
-                                onChange={(e) => setEditedTypes(e.target.value)}
-                                placeholder="Edit Types"
+                                name="types"
+                                value={formData.types}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div>
                             <label>Size:</label>
                             <input
                                 type="text"
-                                value={editedSize}
-                                onChange={(e) => setEditedSize(e.target.value)}
-                                placeholder="Edit Size"
+                                name="size"
+                                value={formData.size}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div>
-                            <label>Price:</label>
+                            <label>Price Per Hour:</label>
                             <input
                                 type="number"
-                                value={editedPrice}
-                                onChange={(e) => setEditedPrice(e.target.value)}
-                                placeholder="Edit Price"
+                                name="pricePerHour"
+                                value={formData.pricePerHour}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div>
+                            <label>Price Per Day:</label>
+                            <input
+                                type="number"
+                                name="pricePerDay"
+                                value={formData.pricePerDay}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div>
+                            <label>Price Per Week:</label>
+                            <input
+                                type="number"
+                                name="pricePerWeek"
+                                value={formData.pricePerWeek}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div>
+                            <label>Price Per Month:</label>
+                            <input
+                                type="number"
+                                name="pricePerMonth"
+                                value={formData.pricePerMonth}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <button onClick={handleSaveChanges} className="save-button">

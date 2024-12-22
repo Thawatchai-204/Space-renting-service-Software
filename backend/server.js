@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads')); // For serving uploaded files
+app.use('/uploads', express.static('uploads'));
 
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://Thawatchai_Admin:p3nudcP1HBJdfEko@srss.alag1un.mongodb.net/', {
@@ -27,10 +27,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, required: true },
-  walletBalance: { type: Number, default: 0 }, // เพิ่มฟิลด์ walletBalance
+  walletBalance: { type: Number, default: 0 },
 });
 
-// User model
 const User = mongoose.model('User', userSchema);
 
 // Space schema
@@ -40,23 +39,29 @@ const spaceSchema = new mongoose.Schema({
   address: { type: String, required: true },
   types: { type: String, required: true },
   size: { type: String, required: true },
-  price: { type: Number, required: true },
+  pricePerHour: { type: Number, default: 0 },
+  pricePerDay: { type: Number, default: 0 },
+  pricePerWeek: { type: Number, default: 0 },
+  pricePerMonth: { type: Number, default: 0 },
   image: { type: String, required: true },
 });
 
-// Space model
+
 const Space = mongoose.model('Space', spaceSchema);
 
 // Booking schema
 const bookingSchema = new mongoose.Schema({
-  spaceId: String,
-  userId: String,
-  date: String,
-  time: String,
+  spaceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Space', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  startDate: { type: String, required: true },
+  endDate: { type: String, required: true },
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
+  totalPrice: { type: Number, required: true },
 });
 
-// Booking model
 const Booking = mongoose.model('Booking', bookingSchema);
+
 
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
@@ -64,13 +69,15 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Set new file name
-  }
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 
 const upload = multer({ storage });
 
-// Route for user registration
+// Routes
+
+// User registration
 app.post('/register', async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -85,7 +92,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Route for user login
+// User login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -101,23 +108,22 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, 'p3nudcP1HBJdfEko', { expiresIn: '1h' });
-    res.json({ token });
+
+    res.json({ token, userId: user._id, username: email });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Route for saving a new space
+// Saving a new space
 app.post('/api/manage-space', upload.single('image'), async (req, res) => {
   try {
-    const { name, advertisingWords, address, types, size, price } = req.body;
+    const { name, advertisingWords, address, types, size, pricePerHour, pricePerDay, pricePerWeek, pricePerMonth } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No image file uploaded' });
     }
-
-    const image = req.file.filename; // Use the uploaded file name
 
     const newSpace = new Space({
       name,
@@ -125,8 +131,11 @@ app.post('/api/manage-space', upload.single('image'), async (req, res) => {
       address,
       types,
       size,
-      price,
-      image,
+      pricePerHour,
+      pricePerDay,
+      pricePerWeek,
+      pricePerMonth,
+      image: req.file.filename,
     });
 
     await newSpace.save();
@@ -137,58 +146,70 @@ app.post('/api/manage-space', upload.single('image'), async (req, res) => {
   }
 });
 
-// Route for fetching all spaces
+// Fetching all spaces
 app.get('/api/spaces', async (req, res) => {
   try {
-    const spaces = await Space.find(); // Fetch all spaces from MongoDB
-    res.status(200).json(spaces);
+      const spaces = await Space.find(); // ตรวจสอบว่าฟิลด์ price ถูกกำหนด
+      res.status(200).json(spaces);
   } catch (error) {
-    console.error('Error fetching spaces:', error);
-    res.status(500).json({ success: false, message: 'Error fetching spaces', error: error.message });
+      console.error('Error fetching spaces:', error);
+      res.status(500).json({ success: false, message: 'Error fetching spaces', error: error.message });
   }
 });
 
-// Route for booking a space
+// Booking a space
 app.post('/api/reserve', async (req, res) => {
-  const { spaceId, userId, date, time } = req.body;
+  const { spaceId, userId, startDate, endDate, startTime, endTime, totalPrice } = req.body;
 
-  if (!spaceId || !userId || !date || !time) {
-    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  // ตรวจสอบว่าข้อมูลครบถ้วน
+  if (!spaceId || !userId || !startDate || !endDate || !startTime || !endTime || !totalPrice) {
+      console.error('Missing required fields:', req.body); // Log ข้อมูลที่ขาดหาย
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
   }
 
   try {
-    // Check if there is already a booking for the same time slot
-    const existingBooking = await Booking.findOne({ spaceId, date, time });
-    if (existingBooking) {
-      return res.status(409).json({ success: false, message: 'This time slot is already booked' });
-    }
+      const existingBooking = await Booking.findOne({
+          spaceId,
+          startDate,
+          endDate,
+          startTime,
+          endTime,
+      });
 
-    // Create a new booking
-    const newBooking = new Booking({
-      spaceId,
-      userId,
-      date,
-      time,
-    });
+      if (existingBooking) {
+          return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+      }
 
-    await newBooking.save();
-    res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+      const newBooking = new Booking({
+          spaceId,
+          userId,
+          startDate,
+          endDate,
+          startTime,
+          endTime,
+          totalPrice,
+      });
+
+      await newBooking.save();
+      res.status(201).json({ success: true, message: 'Booking saved successfully!' });
   } catch (error) {
-    console.error('Error saving booking:', error);
-    res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
+      console.error('Error saving booking:', error);
+      res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
   }
 });
 
-// Route for fetching user bookings
-app.get('/api/user-bookings/:userId', async (req, res) => {
+
+
+// Fetching user bookings
+app.get('/api/bookings/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const bookings = await Booking.find({ userId });
+    const bookings = await Booking.find({ userId }).populate('spaceId');
     res.status(200).json(bookings);
   } catch (error) {
-    console.error('Error fetching user bookings:', error);
-    res.status(500).json({ success: false, message: 'Error fetching user bookings', error: error.message });
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ success: false, message: 'Error fetching bookings', error: error.message });
   }
 });
 
@@ -196,10 +217,12 @@ app.get('/api/user-bookings/:userId', async (req, res) => {
 app.get('/api/wallet/:userId', async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user) return res.status(404).send('ไม่พบผู้ใช้งาน');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
     res.json({ balance: user.walletBalance });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error('Error fetching wallet balance:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -207,14 +230,14 @@ app.put('/api/wallet/:userId', async (req, res) => {
   try {
     const { amount } = req.body;
     const user = await User.findById(req.params.userId);
-    if (!user) return res.status(404).send('ไม่พบผู้ใช้งาน');
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Update wallet balance
     user.walletBalance += amount;
     await user.save();
     res.json({ balance: user.walletBalance });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error('Error updating wallet balance:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -223,164 +246,36 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-const bookingRoutes = require('./routes/bookingRoutes');
-app.use('/api/bookings', bookingRoutes);
-
-// Route for booking a space
-app.post('/api/reserve', async (req, res) => {
-  const { spaceId, userId, date, time } = req.body;
-
-  // Log input data to see if they are received correctly
-  console.log('spaceId:', spaceId, 'userId:', userId, 'date:', date, 'time:', time);
-
-  // Check for missing fields
-  if (!spaceId || !userId || !date || !time) {
-    return res.status(400).json({ success: false, message: 'Missing required fields' });
-  }
-
+app.post('/api/manage-space', upload.single('image'), async (req, res) => {
   try {
-    // Check if there is already a booking for the same time slot
-    const existingBooking = await Booking.findOne({ spaceId, date, time });
-    
-    // Log the result of booking check
-    console.log('Existing Booking:', existingBooking);
+      const { name, advertisingWords, address, types, size, pricePerHour, pricePerDay, pricePerWeek, pricePerMonth } = req.body;
 
-    if (existingBooking) {
-      return res.status(409).json({ success: false, message: 'This time slot is already booked' });
-    }
-
-    // Create a new booking
-    const newBooking = new Booking({
-      spaceId,
-      userId,
-      date,
-      time,
-    });
-
-    await newBooking.save();
-    res.status(201).json({ success: true, message: 'Booking saved successfully!' });
-  } catch (error) {
-    console.error('Error saving booking:', error);
-    res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
-  }
-});
-
-// Route for booking a space
-app.post('/api/reserve', async (req, res) => {
-  const { spaceId, userId, date, time } = req.body;
-
-  // Log ข้อมูลที่ส่งมาจาก Frontend
-  console.log('Received from Frontend:', { spaceId, userId, date, time });
-
-  if (!spaceId || !userId || !date || !time) {
-    return res.status(400).json({ success: false, message: 'Missing required fields' });
-  }
-
-  try {
-    // ตรวจสอบว่ามีการจองในเวลาเดียวกันหรือไม่
-    const existingBooking = await Booking.findOne({ spaceId, date, time });
-    if (existingBooking) {
-      return res.status(409).json({ success: false, message: 'This time slot is already booked' });
-    }
-
-    // ถ้าไม่มีการจองซ้ำ สร้างการจองใหม่
-    const newBooking = new Booking({
-      spaceId,
-      userId,
-      date,
-      time,
-    });
-
-    await newBooking.save(); // บันทึกข้อมูลลง MongoDB
-
-    // Log ข้อมูลการจองที่บันทึก
-    console.log('Booking saved:', newBooking);
-
-    res.status(201).json({ success: true, message: 'Booking saved successfully!' });
-  } catch (error) {
-    console.error('Error saving booking:', error);
-    res.status(500).json({ success: false, message: 'Error saving booking', error: error.message });
-  }
-
-  const reservationRoutes = require('./routes/reservationRoutes');
-  app.use('/api/reservations', reservationRoutes);
-
-});
-
-app.delete('/api/spaces/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deletedSpace = await Space.findByIdAndDelete(id); // ลบพื้นที่ด้วย `_id`
-    if (!deletedSpace) {
-      return res.status(404).json({ success: false, message: 'Space not found' });
-    }
-    res.status(200).json({ success: true, message: 'Space deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting space:', error);
-    res.status(500).json({ success: false, message: 'Error deleting space' });
-  }
-});
-
-app.get('/api/bookings/:userId', async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const bookings = await Booking.find({ userId }).populate('spaceId'); // ใช้ populate เพื่อดึงข้อมูลพื้นที่
-    res.status(200).json(bookings);
-  } catch (error) {
-    console.error('Error fetching bookings:', error);
-    res.status(500).json({ success: false, message: 'Error fetching bookings' });
-  }
-});
-
-mongoose.connection.on('connected', () => {
-  console.log('MongoDB Connected:', mongoose.connection.name);
-});
-
-app.post('/api/reserve', async (req, res) => {
-  const { spaceId, userId, date, time } = req.body;
-
-  console.log('Request Data:', { spaceId, userId, date, time }); // Log ข้อมูลที่ส่งมา
-
-  if (!spaceId || !userId || !date || !time) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-  }
-
-  try {
-      const existingBooking = await Booking.findOne({ spaceId, date, time });
-      if (existingBooking) {
-          return res.status(409).json({ success: false, message: 'This time slot is already booked' });
+      if (!req.file) {
+          return res.status(400).json({ success: false, message: 'No image file uploaded' });
       }
 
-      const newBooking = new Booking({ spaceId, userId, date, time });
-      await newBooking.save();
-      res.status(201).json({ success: true, message: 'Booking saved successfully!' });
+      // ตรวจสอบว่าอย่างน้อยต้องมีราคาใดราคาหนึ่ง
+      if (!pricePerHour && !pricePerDay && !pricePerWeek && !pricePerMonth) {
+          return res.status(400).json({ success: false, message: 'At least one price field is required' });
+      }
+
+      const newSpace = new Space({
+          name,
+          advertisingWords,
+          address,
+          types,
+          size,
+          pricePerHour: pricePerHour || 0,
+          pricePerDay: pricePerDay || 0,
+          pricePerWeek: pricePerWeek || 0,
+          pricePerMonth: pricePerMonth || 0,
+          image: req.file.filename,
+      });
+
+      await newSpace.save();
+      res.status(201).json({ success: true, message: 'Space saved successfully!' });
   } catch (error) {
-      console.error('Error saving booking:', error);
-      res.status(500).json({ success: false, message: 'Server error', error: error.message });
+      console.error('Error saving space:', error);
+      res.status(500).json({ success: false, message: 'Error saving space', error: error.message });
   }
 });
-
-app.post('/api/reserve', async (req, res) => {
-    const { spaceId, userId, date, time } = req.body;
-
-    console.log('Received reservation request:', { spaceId, userId, date, time });
-
-    if (!spaceId || !userId || !date || !time) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
-    try {
-        const existingBooking = await Booking.findOne({ spaceId, date, time });
-        if (existingBooking) {
-            return res.status(409).json({ success: false, message: 'This time slot is already booked' });
-        }
-
-        const newBooking = new Booking({ spaceId, userId, date, time });
-        await newBooking.save();
-        res.status(201).json({ success: true, message: 'Booking saved successfully!' });
-    } catch (error) {
-        console.error('Error saving booking:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-

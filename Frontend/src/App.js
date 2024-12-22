@@ -8,6 +8,7 @@ import LoginTH from './pages/LoginTH';
 import RegisterTH from './pages/RegisterTH';
 import HomeTH from './pages/TH/Service_users/Home';
 import Reservations from './pages/EN/Service_users/Reservations';
+import Wallet from './pages/EN/Service_users/Wallet';
 
 /*Start Service users*/
 import ReserveEN from './pages/EN/Service_users/Reserve';
@@ -38,6 +39,9 @@ import AddspaceTH from './pages/TH/Service_users/Addspace';
 /*End Service users*/
 
 /*Start Admin*/
+
+import AdminDashboard from './pages/EN/Administrator/AdminDashboard';
+
 
 /*End Admin*/
 
@@ -86,7 +90,9 @@ function App() {
             <Route path="/addspace" element={<AddspaceEN />} />
             <Route path="/reserveform" element={<ReserveFormEN />} />
             <Route path="/reservations" element={<Reservations />} />
-            
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/AdminDashboard" element={<AdminDashboard />} />
+
           </>
         ) : (
           <>

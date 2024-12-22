@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // สำหรับ Redirect
 import './Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // เพิ่มสถานะ Loader
+  const [errorMessage, setErrorMessage] = useState(''); // ข้อความแสดงข้อผิดพลาด
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      setErrorMessage('Please fill in both email and password.');
+      return;
+    }
+
+    setIsLoading(true); // เริ่ม Loader
+    setErrorMessage(''); // ล้างข้อความแสดงข้อผิดพลาด
 
     try {
       const response = await fetch('http://localhost:5000/login', {
@@ -19,27 +31,41 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', data.token); // Save JWT token in local storage
-        localStorage.setItem('userId', data.userId); // Save userId in local storage
-        localStorage.setItem('username', data.username); // Save username in local storage (if available)
-        alert('Login successful');
-        // Redirect to home or another page
-        window.location.href = '/home';
+
+        // บันทึกข้อมูลผู้ใช้ใน localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('role', data.role); // เพิ่ม role ลงใน localStorage
+        console.log('Login Response:', data); // ตรวจสอบว่ามี role ใน data หรือไม่
+        console.log('Role in LocalStorage:', localStorage.getItem('role'));
+
+        // ตรวจสอบ role แล้ว Redirect
+        if (data.username === 'admin@example.com') {
+          navigate('/AdminDashboard'); // ไปยัง AdminDashboard
+        } else {
+          navigate('/home'); // ไปยัง Home สำหรับ user ปกติ
+        }
       } else {
         const errorData = await response.json();
-        alert(`Error logging in: ${errorData.message}`);
+        setErrorMessage(`Error logging in: ${errorData.message}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error logging in');
+      setErrorMessage('Error connecting to server. Please try again.');
+    } finally {
+      setIsLoading(false); // จบ Loader
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-left">
-        <h1>Space renting service Software</h1>
-        <img src="https://i0.wp.com/storage.googleapis.com/fplswordpressblog/2024/04/4-10.png?resize=1024%2C1024&ssl=1" alt="Space renting" />
+        <h1>Space Renting Service</h1>
+        <img
+          src="https://i0.wp.com/storage.googleapis.com/fplswordpressblog/2024/04/4-10.png?resize=1024%2C1024&ssl=1"
+          alt="Space renting"
+        />
       </div>
       <div className="login-right">
         <h1>Login</h1>
@@ -66,12 +92,12 @@ function Login() {
           </div>
           <div className="remember-me">
             <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me">Keep a record of my usage</label>
+            <label htmlFor="remember-me">Keep me logged in</label>
           </div>
-          <div className="forgot-password">
-            <a href="/forgot-password">Forget password</a>
-          </div>
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+          {errorMessage && <p className="error-message">{errorMessage}</p>} {/* แสดงข้อความ Error */}
         </form>
         <div className="create-account">
           <a href="/register">Create a new account</a>

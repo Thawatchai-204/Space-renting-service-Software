@@ -1,26 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Wallet.css';
 import { FaHome, FaCalendarAlt, FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import axios from 'axios';
 
 function Wallet() {
-    const [balance, setBalance] = useState(0); // เริ่มต้นด้วยยอดเงิน 0 บาท
-    const [transactionHistory, setTransactionHistory] = useState([]); // สำหรับเก็บประวัติการทำธุรกรรม
-    const [topUpAmount, setTopUpAmount] = useState(''); // เก็บค่าที่จะเติมเงิน
+    const [balance, setBalance] = useState(0); // Store the current wallet balance
+    const [transactionHistory, setTransactionHistory] = useState([]); // Store transaction history
+    const [topUpAmount, setTopUpAmount] = useState(''); // Amount to top up
+    const userId = localStorage.getItem('userId'); // Retrieve userId from local storage
 
-    const handleTopUp = () => {
+    // Fetch wallet balance and transaction history on component load
+    useEffect(() => {
+        const fetchWalletData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/wallet/${userId}`);
+                setBalance(response.data.balance || 0);
+                setTransactionHistory(response.data.transactions || []);
+            } catch (error) {
+                console.error('Error fetching wallet data:', error);
+                alert('Error fetching wallet data');
+            }
+        };
+
+        fetchWalletData();
+    }, [userId]);
+
+    // Handle wallet top-up
+    const handleTopUp = async () => {
         if (topUpAmount && !isNaN(topUpAmount)) {
-            const newBalance = balance + parseFloat(topUpAmount);
-            setBalance(newBalance); // อัปเดตยอดเงิน
+            try {
+                const response = await axios.put(`http://localhost:5000/api/wallet/${userId}`, {
+                    amount: parseFloat(topUpAmount),
+                });
 
-            // เพิ่มประวัติการทำธุรกรรม
-            const newTransaction = {
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString(),
-                description: `Top up ${topUpAmount} THB`,
-            };
-            setTransactionHistory([...transactionHistory, newTransaction]);
+                // Update the balance and transaction history locally
+                setBalance(response.data.balance);
+                const newTransaction = {
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString(),
+                    description: `Top up ${topUpAmount} THB`,
+                };
+                setTransactionHistory((prev) => [...prev, newTransaction]);
 
-            setTopUpAmount(''); // รีเซ็ตช่องกรอกยอดเงิน
+                setTopUpAmount(''); // Clear input field
+                alert('Top-up successful');
+            } catch (error) {
+                console.error('Error topping up wallet:', error);
+                alert('Error topping up wallet');
+            }
+        } else {
+            alert('Please enter a valid amount');
         }
     };
 

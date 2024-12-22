@@ -8,7 +8,7 @@ import './Reservations.css';
 
 function Reservations() {
   const [reservations, setReservations] = useState([]);
-  const userId = localStorage.getItem('userId'); // สมมติว่า userId ถูกเก็บใน LocalStorage
+  const userId = localStorage.getItem('userId'); 
 
   useEffect(() => {
     const fetchReservations = async () => {
