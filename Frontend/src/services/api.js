@@ -20,6 +20,8 @@ export const searchSpaces = async (query) => {
     throw new Error('Network response was not ok');
   }
   return response.json();
+
+
 };
 
 

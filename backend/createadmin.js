@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('./models/User'); // อ้างอิงโมเดล User
+const User = require('./models/User'); 
 
-// ใช้ MONGO_URI ที่คุณระบุ
+// ใช้ MONGO_URI 
 const MONGO_URI = 'mongodb+srv://6310110204:p3nudcP1HBJdfEko@srss.alag1un.mongodb.net/?retryWrites=true&w=majority&appName=SRSS';
     
 // เชื่อมต่อ MongoDB

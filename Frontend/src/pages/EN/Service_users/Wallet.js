@@ -7,6 +7,10 @@ function Wallet() {
     const [balance, setBalance] = useState(0); // Store the current wallet balance
     const [transactionHistory, setTransactionHistory] = useState([]); // Store transaction history
     const [topUpAmount, setTopUpAmount] = useState(''); // Amount to top up
+    const [qrCode, setQrCode] = useState(''); // QR Code URL
+    const [showModal, setShowModal] = useState(false); // Show modal state
+    const [uploadedProof, setUploadedProof] = useState(null); // Payment proof file
+    const [proofUploadStatus, setProofUploadStatus] = useState('');
     const userId = localStorage.getItem('userId'); // Retrieve userId from local storage
 
     // Fetch wallet balance and transaction history on component load
@@ -25,33 +29,56 @@ function Wallet() {
         fetchWalletData();
     }, [userId]);
 
-    // Handle wallet top-up
-    const handleTopUp = async () => {
-        if (topUpAmount && !isNaN(topUpAmount)) {
-            try {
-                const response = await axios.put(`http://localhost:5000/api/wallet/${userId}`, {
-                    amount: parseFloat(topUpAmount),
-                });
-
-                // Update the balance and transaction history locally
-                setBalance(response.data.balance);
-                const newTransaction = {
-                    date: new Date().toLocaleDateString(),
-                    time: new Date().toLocaleTimeString(),
-                    description: `Top up ${topUpAmount} THB`,
-                };
-                setTransactionHistory((prev) => [...prev, newTransaction]);
-
-                setTopUpAmount(''); // Clear input field
-                alert('Top-up successful');
-            } catch (error) {
-                console.error('Error topping up wallet:', error);
-                alert('Error topping up wallet');
-            }
-        } else {
-            alert('Please enter a valid amount');
+    // Fetch QR Code from backend
+    const fetchQRCode = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/qrcode');
+            setQrCode(response.data.qrCode);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error fetching QR code:', error);
+            alert('Failed to fetch QR code.');
         }
     };
+
+    // Handle wallet top-up (Show QR Code Modal)
+    const handleTopUpClick = () => {
+        if (topUpAmount > 0) {
+            fetchQRCode();
+        } else {
+            alert('Please enter a valid amount.');
+        }
+    };
+
+    // Handle proof of payment upload
+    const handleProofUpload = async () => {
+        if (!uploadedProof) {
+            alert('Please select a file to upload.');
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('proof', uploadedProof);
+    
+        try {
+            const response = await axios.post('http://localhost:5000/api/upload/proof', formData, {
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            if (response.status === 200) {
+                setProofUploadStatus('✅ Proof uploaded successfully!');
+                alert('Proof uploaded successfully!');
+            } else {
+                setProofUploadStatus('❌ Failed to upload proof.');
+            }
+        } catch (error) {
+            console.error('Error uploading proof:', error.response?.data || error.message);
+            setProofUploadStatus('❌ Failed to upload proof.');
+        }
+    };
+    
 
     return (
         <div className="wallet-container">
@@ -59,7 +86,7 @@ function Wallet() {
                 <div className="logo">
                     <li>
                         <a href="/Home">
-                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/backend/img/logoSRSS.png" alt="Logo" />
+                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" />
                         </a>
                     </li>
                 </div>
@@ -97,7 +124,7 @@ function Wallet() {
                             onChange={(e) => setTopUpAmount(e.target.value)} 
                             placeholder="Enter amount" 
                         />
-                        <button className="top-up-button" onClick={handleTopUp}>TOP UP</button>
+                        <button className="top-up-button" onClick={handleTopUpClick}>TOP UP</button>
                     </div>
                     <div className="transaction-history">
                         <h3>All Transactions</h3>
@@ -130,6 +157,21 @@ function Wallet() {
                     </div>
                 </section>
             </main>
+
+            {/* QR Code Modal */}
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+                        <h2>Scan QR Code</h2>
+                        {qrCode ? <img src={`http://localhost:5000${qrCode}`} alt="QR Code" className="qr-code" /> : <p>Loading...</p>}
+                        <h3>Upload Payment Proof</h3>
+                        <input type="file" onChange={(e) => setUploadedProof(e.target.files[0])} />
+                        <button onClick={handleProofUpload}>Upload Proof</button>
+                        {proofUploadStatus && <p>{proofUploadStatus}</p>}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

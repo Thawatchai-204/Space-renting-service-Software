@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://Thawatchai_Admin:p3nudcP1HBJdfEko@srss.alag1un.mongodb.net/', {
@@ -278,4 +278,84 @@ app.post('/api/manage-space', upload.single('image'), async (req, res) => {
       console.error('Error saving space:', error);
       res.status(500).json({ success: false, message: 'Error saving space', error: error.message });
   }
+});
+
+const fs = require('fs');
+const uploadDir = './uploads';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Route อัปโหลดไฟล์
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+    }
+    res.json({ fileName: req.file.filename, filePath: `/uploads/${req.file.filename}` });
+});
+
+// ให้ Express เสิร์ฟไฟล์จากโฟลเดอร์ uploads
+app.use('/uploads', express.static('uploads'));
+
+app.get('/api/qrcode', (req, res) => {
+  const qrCodePath = '/uploads/admin_qr_code.jpg'; // ตั้งชื่อไฟล์ QR Code ที่อัปโหลดไว้
+  res.json({ qrCode: qrCodePath });
+});
+
+app.post('/api/upload-proof', upload.single('proof'), (req, res) => {
+  if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+  }
+  res.json({ message: 'Upload successful', filePath: `/uploads/${req.file.filename}` });
+});
+
+// API สำหรับอัปโหลดหลักฐานการโอนเงิน
+app.post('/api/upload-proof', upload.single('proof'), (req, res) => {
+  if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+  }
+  res.json({ message: 'Upload successful', filePath: `/uploads/${req.file.filename}` });
+});
+
+// สร้างโฟลเดอร์อัตโนมัติหากยังไม่มี
+const createFolderIfNotExists = (folder) => {
+  if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+  }
+};
+
+// ตั้งค่า storage สำหรับ QR Code
+const qrStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      const qrFolder = 'uploads/qrcodes/';
+      createFolderIfNotExists(qrFolder);
+      cb(null, qrFolder);
+  },
+  filename: (req, file, cb) => {
+      cb(null, 'qrcode_' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+// ตั้งค่า storage สำหรับ Proof of Payment
+const proofStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      const proofFolder = 'uploads/proofs/';
+      createFolderIfNotExists(proofFolder);
+      cb(null, proofFolder);
+  },
+  filename: (req, file, cb) => {
+      cb(null, 'proof_' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+// สร้าง multer middleware สำหรับอัปโหลด QR Code
+const uploadQrCode = multer({ storage: qrStorage });
+app.post('/api/upload/qrcode', uploadQrCode.single('image'), (req, res) => {
+  res.json({ fileName: req.file.filename, filePath: `/uploads/qrcodes/${req.file.filename}` });
+});
+
+// สร้าง multer middleware สำหรับอัปโหลดหลักฐานการโอนเงิน
+const uploadProof = multer({ storage: proofStorage });
+app.post('/api/upload/proof', uploadProof.single('image'), (req, res) => {
+  res.json({ fileName: req.file.filename, filePath: `/uploads/proofs/${req.file.filename}` });
 });

@@ -23,7 +23,7 @@ function Home() {
         <div className="home-container">
             <aside className="sidebar">
                 <div className="logo">
-                    <li><a href="/Home"><img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/main/Screenshot%202024-07-26%20013811.png" alt="Logo" /></a></li>
+                    <li><a href="/Home"><img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" /></a></li>
                 </div>
                 <nav>
                     <ul>
