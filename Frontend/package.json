@@ -1,10 +1,13 @@
 {
+  
   "name": "frontend",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
     "axios": "^0.21.4",
+    "bootstrap": "^5.3.3",
     "react": "^18.3.1",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.25.0",
@@ -39,4 +42,5 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "cross-env": "^7.0.3"
   }
+  
 }

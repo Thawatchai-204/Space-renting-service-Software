@@ -1,167 +1,234 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/EN/Service_users/Profile.js
+import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './Profile.css';
-import { FaHome, FaCalendarAlt, FaUser, FaCog, FaSignOutAlt, FaEdit } from 'react-icons/fa';
+import { FaHome, FaPlus, FaList, FaBell, FaCog, FaSignOutAlt, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCamera } from 'react-icons/fa';
 import axios from 'axios';
+import { LanguageContext } from '../../../LanguageContext';
 
 function Profile() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const { language, toggleLanguage } = useContext(LanguageContext);
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [userId, setUserId] = useState(null);
+    const [profileImage, setProfileImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
+    const [walletBalance, setWalletBalance] = useState(0); // State for wallet balance
 
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [isEditingEmail, setIsEditingEmail] = useState(false);
-    const [isEditingPhone, setIsEditingPhone] = useState(false);
-    const [isConfirmingPassword, setIsConfirmingPassword] = useState(false);
+    const navigate = useNavigate();
 
-    // Fetch user data from backend when the component mounts
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                // Replace this with your API endpoint and add user authentication (token, etc.)
-                const response = await axios.get('/api/profile'); // Example: '/api/profile'
-                
-                const { name, email, phone } = response.data; // Adjust based on your API response
-                setName(name);
-                setEmail(email);
-                setPhone(phone);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            setUserId(storedUserId);
+            fetchUserProfile(storedUserId);
+            fetchWalletBalance(storedUserId); // Fetch wallet balance
+        } else {
+            console.error('User ID not found in localStorage');
+        }
     }, []);
 
-    const handleSave = () => {
-        if (!confirmPassword) {
-            alert("Please enter your password to confirm changes.");
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (storedUsername) setUsername(storedUsername);
+    }, []);
+
+    const fetchUserProfile = async (userId) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/user/${userId}`);
+            const userData = response.data;
+            setEmail(userData.email);
+            setPhone(userData.phone);
+            setImagePreview(userData.profileImage || ''); // Set profile image URL if available
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
+
+    const fetchWalletBalance = async (userId) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/wallet/${userId}`);
+            setWalletBalance(response.data.balance || 0);
+        } catch (error) {
+            console.error('Error fetching wallet balance:', error);
+        }
+    };
+
+    const handleUpdateProfile = async () => {
+        if (password !== confirmPassword) {
+            alert('Passwords do not match.');
             return;
         }
 
-        setIsEditingName(false);
-        setIsEditingEmail(false);
-        setIsEditingPhone(false);
-        setIsConfirmingPassword(false);
-        setConfirmPassword("");
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('phone', phone);
+        formData.append('password', password);
+        if (profileImage) {
+            formData.append('profileImage', profileImage);
+        }
 
-        // Make API call to save updated user data (if necessary)
-        const updateUserData = async () => {
-            try {
-                const response = await axios.put('/api/profile', {
-                    name,
-                    email,
-                    phone,
-                    confirmPassword
-                });
-                console.log(response.data.message); // Show success message
-            } catch (error) {
-                console.error('Error updating user data:', error);
+        try {
+            const response = await axios.put(`http://localhost:5000/api/user/${userId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.success) {
+                alert('Profile updated successfully!');
+                setImagePreview(response.data.profileImage || ''); // Update image preview
+                fetchWalletBalance(userId); // Fetch updated wallet balance
+            } else {
+                alert(response.data.message || 'Failed to update profile.');
             }
-        };
-
-        updateUserData();
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+            alert('Failed to update profile.');
+        }
     };
 
-    const startEditing = (editType) => {
-        setIsConfirmingPassword(true);
-        if (editType === "name") setIsEditingName(true);
-        if (editType === "email") setIsEditingEmail(true);
-        if (editType === "phone") setIsEditingPhone(true);
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileImage(file);
+            setImagePreview(URL.createObjectURL(file)); // Preview the selected image
+        }
     };
 
     return (
-        <div className="home-container">
-            <aside className="sidebar">
-                <div className="logo">
-                    <li>
-                        <a href="/Home">
-                            <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" />
-                        </a>
-                    </li>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="/Home"><FaHome /> Home</a></li>
-                        <li><a href="/Addspace"><FaCalendarAlt /> Add space</a></li>
-                        <li><a href="/Managespace"><FaCalendarAlt /> Manage space</a></li>
-                        <li className="active"><a href="/Profile"><FaUser /> Profile</a></li>
-                        <li><a href="/Settings"><FaCog /> Settings</a></li>
-                        <li className="logout"><a href="/login"><FaSignOutAlt /> Log out</a></li>
-                    </ul>
-                </nav>
-            </aside>
-            <main className="main-content">
-                <header>
-                    <h1>Profile</h1>
-                    <div className="user-info">
-                        <span className="notification-icon">🔔</span>
-                        <li><a href="/Profile"><span className="user-name">User</span></a></li>
-                        <li><a href="/Wallet"><span className="user-balance">Wallet</span></a></li>
+        <div className="container-fluid profile-container">
+            {/* Fixed Top Navbar */}
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+                <div className="container-fluid">
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarNav">
+                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li className="nav-item">
+                                <a className="nav-link" href="/Home"><FaHome className="me-2" /> {language === 'EN' ? 'Home' : 'หน้าหลัก'}</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/Addspace"><FaPlus className="me-2" /> {language === 'EN' ? 'Add Space' : 'เพิ่มพื้นที่'}</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/Managespace"><FaList className="me-2" /> {language === 'EN' ? 'Manage Space' : 'จัดการพื้นที่'}</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link active" href="/Profile"><FaUser className="me-2" /> {language === 'EN' ? 'Profile' : 'โปรไฟล์'}</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/Settings"><FaCog className="me-2" /> {language === 'EN' ? 'Settings' : 'ตั้งค่า'}</a>
+                            </li>
+                        </ul>
+                        <div className="d-flex align-items-center gap-3">
+                            <a href="/Profile" className="text-decoration-none text-light"> {username || 'User'}</a>
+                            <a href="/Wallet" className="btn btn-outline-light btn-sm">
+                                <FaBell className="me-2" /> {language === 'EN' ? 'Wallet' : 'กระเป๋าเงิน'}: {walletBalance} THB
+                            </a>
+                            <a href="/login" className="btn btn-danger btn-sm"><FaSignOutAlt className="me-2" /> {language === 'EN' ? 'Logout' : 'ออกจากระบบ'}</a>
+                        </div>
                     </div>
+                </div>
+            </nav>
+
+            {/* Main Content */}
+            <main className="container-fluid mt-5 pt-4">
+                <header className="d-flex justify-content-between align-items-center mb-4">
+                    
                 </header>
-                <section className="profile-section">
-                    <img src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745" alt="Profile" />
-                    <div className="profile-info">
-                        <div className="profile-item">
-                            <label>Change E-mail</label>
-                            <div className="profile-edit">
-                                <input 
-                                    type="text" 
-                                    value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} 
-                                    disabled={!isEditingEmail}
-                                />
-                                <button className="edit-button" onClick={() => startEditing("email")}>
-                                    <FaEdit />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="profile-item">
-                            <label>Change Name</label>
-                            <div className="profile-edit">
-                                <input 
-                                    type="text" 
-                                    value={name} 
-                                    onChange={(e) => setName(e.target.value)} 
-                                    disabled={!isEditingName}
-                                />
-                                <button className="edit-button" onClick={() => startEditing("name")}>
-                                    <FaEdit />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="profile-item">
-                            <label>Change Phone</label>
-                            <div className="profile-edit">
-                                <input 
-                                    type="text" 
-                                    value={phone} 
-                                    onChange={(e) => setPhone(e.target.value)} 
-                                    disabled={!isEditingPhone}
-                                />
-                                <button className="edit-button" onClick={() => startEditing("phone")}>
-                                    <FaEdit />
-                                </button>
-                            </div>
-                        </div>
-                        
-                        {isConfirmingPassword && (
-                            <div className="profile-item">
-                                <label>Confirm Password</label>
-                                <div className="profile-edit">
-                                    <input 
-                                        type="password" 
-                                        value={confirmPassword} 
-                                        onChange={(e) => setConfirmPassword(e.target.value)} 
+
+                {/* Profile Section */}
+                <section className="mb-5">
+                    <div className="row justify-content-center">
+                        {/* Column 1: Profile Image */}
+                        <div className="col-md-4 mb-4">
+                            <div className="profile-image-section text-center">
+                                <div className="profile-image-container mb-4">
+                                    <div className="profile-image-wrapper">
+                                        <img
+                                            src={imagePreview || "https://via.placeholder.com/150"} // Default placeholder image
+                                            alt="Profile"
+                                            className="profile-image"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="upload-section">
+                                    <label htmlFor="profileImageUpload" className="btn btn-secondary">
+                                        <FaCamera className="me-2" /> {language === 'EN' ? 'Upload Image' : 'อัปโหลดรูปภาพ'}
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="profileImageUpload"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleImageChange}
                                     />
                                 </div>
                             </div>
-                        )}
+                        </div>
+
+                        {/* Column 2: Personal Information */}
+                        <div className="col-md-8">
+                            <div className="personal-info-section">
+                                <h5 className="fw-bold">{language === 'EN' ? 'Personal Information' : 'ข้อมูลส่วนตัว'}</h5>
+                                <div className="mb-3">
+                                    <label className="form-label">{language === 'EN' ? 'Name:' : 'ชื่อ:'}</label>
+                                    <input type="text" className="form-control custom-input" value={username} readOnly />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">{language === 'EN' ? 'Email:' : 'อีเมล:'}</label>
+                                    <input type="email" className="form-control custom-input" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">{language === 'EN' ? 'Phone:' : 'โทรศัพท์:'}</label>
+                                    <input type="text" className="form-control custom-input" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">{language === 'EN' ? 'Password:' : 'รหัสผ่าน:'}</label>
+                                    <input type="password" className="form-control custom-input" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">{language === 'EN' ? 'Confirm Password:' : 'ยืนยันรหัสผ่าน:'}</label>
+                                    <input type="password" className="form-control custom-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                </div>
+                                <div className="d-flex justify-content-end">
+                                    <button className="btn btn-primary" onClick={handleUpdateProfile}>
+                                        {language === 'EN' ? 'Save' : 'บันทึก'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button className="save-button" onClick={handleSave}>Save</button>
                 </section>
             </main>
+
+            {/* Footer with Logo and Language Toggle */}
+            <footer className="bg-dark text-light py-4 mt-5">
+                <div className="container text-center">
+                    <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" width="100" />
+                    <p className="mt-3">© 2023 {language === 'EN' ? 'All rights reserved.' : 'สงวนลิขสิทธิ์'}</p>
+                    <div className="mt-2">
+                        <button
+                            onClick={() => toggleLanguage('EN')}
+                            className="btn btn-link text-light"
+                        >
+                            🇺🇸
+                        </button>
+                        <button
+                            onClick={() => toggleLanguage('TH')}
+                            className="btn btn-link text-light"
+                        >
+                            🇹🇭
+                        </button>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }

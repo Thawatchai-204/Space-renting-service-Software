@@ -164,7 +164,7 @@ function Home() {
 
     // Switch Role Function
     const handleSwitchRole = () => {
-        navigate('/Service_provider/home'); // ต้องตรงกับเส้นทางใน App.js
+        navigate('/home'); // ต้องตรงกับเส้นทางใน App.js
     };
 
     return (
@@ -211,7 +211,7 @@ function Home() {
                     style={{ height: '400px', objectFit: 'cover' }}
                 />
                 <div className="header-content position-absolute top-50 start-50 translate-middle text-center text-white">
-                    <h1 className="fw-bold">{language === 'EN' ? 'Welcome to Our Space Rental Service' : 'ยินดีต้อนรับสู่บริการเช่าพื้นที่'}</h1>
+                    <h1 className="fw-bold">{language === 'EN' ? 'Welcome to Our Space Rental Service provider' : 'ยินดีต้อนรับสู่บริการเช่าพื้นที่'}</h1>
                     <p className="lead">{language === 'EN' ? 'Find the perfect space for your needs' : 'ค้นหาพื้นที่ที่เหมาะกับความต้องการของคุณ'}</p>
                     <div className="input-group mt-4" style={{ maxWidth: '500px', margin: '0 auto' }}>
                         <input type="text" className="form-control form-control-lg" placeholder={language === 'EN' ? 'Search Here' : 'ค้นหาที่นี่'} />
@@ -223,7 +223,7 @@ function Home() {
             {/* Main Content */}
             <main className="container-fluid mt-5 pt-4">
                 <header className="d-flex justify-content-between align-items-center mb-4">
-                    <h1 className="fw-bold">{language === 'EN' ? 'Service User' : 'ผู้ใช้บริการ'}</h1>
+                    <h1 className="fw-bold">{language === 'EN' ? 'Service provider' : 'ผู้ให้บริการ'}</h1>
                 </header>
 
                 {/* Reservations Section */}
