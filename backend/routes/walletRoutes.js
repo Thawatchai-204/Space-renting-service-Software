@@ -88,12 +88,19 @@ router.put('/deduct/:userId', async (req, res) => {
 // ✅ อัปโหลดหลักฐานการโอน
 router.post('/topup', upload.single('proof'), async (req, res) => {
     try {
+        console.log("📌 File Received:", req.file);
+        console.log("📌 Body Data:", req.body);
+
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'No file uploaded or invalid file format.' });
         }
 
         const { userId, amount } = req.body;
         const proofFilename = req.file.filename;
+
+        if (!userId || !amount) {
+            return res.status(400).json({ success: false, message: 'Missing required fields.' });
+        }
 
         let wallet = await Wallet.findOne({ userId });
         if (!wallet) wallet = new Wallet({ userId, balance: 0 });
@@ -113,37 +120,64 @@ router.post('/topup', upload.single('proof'), async (req, res) => {
 
         res.status(200).json({ success: true, balance: wallet.balance });
     } catch (error) {
-        console.error('Error processing top-up:', error);
+        console.error('❌ Error processing top-up:', error);
         res.status(500).json({ success: false, message: error.message || 'Failed to process top-up' });
     }
 });
 
-
 router.post('/upload-proof', upload.single('proof'), async (req, res) => {
-  try {
-      const { userId, amount } = req.body;
-      const proofPath = `/uploads/proofs/${req.file.filename}`;
+    try {
+        // ตรวจสอบว่ามีไฟล์ถูกอัปโหลดหรือไม่
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded or invalid file format.' });
+        }
 
-      await Transaction.create({
-          userId,
-          amount,
-          proof: proofPath,
-          type: 'top-up',
-          date: new Date(),
-      });
+        const { userId, amount } = req.body;
 
-      const wallet = await Wallet.findOne({ userId });
-      if (wallet) {
-          wallet.balance += parseFloat(amount);
-          await wallet.save();
-      }
+        // ตรวจสอบว่ามี userId และ amount หรือไม่
+        if (!userId || !amount) {
+            return res.status(400).json({ success: false, message: 'Missing required fields.' });
+        }
 
-      res.status(200).json({ message: 'Proof uploaded successfully', proofPath });
-  } catch (error) {
-      console.error('Error uploading proof:', error);
-      res.status(500).json({ message: 'Error uploading proof' });
-  }
+        const proofPath = `/uploads/proofs/${req.file.filename}`;
+
+        // สร้าง Transaction
+        await Transaction.create({
+            userId,
+            amount,
+            proof: proofPath,
+            type: 'top-up',
+            date: new Date(),
+        });
+
+        // หา Wallet ของผู้ใช้
+        let wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            // ถ้าไม่มี Wallet ให้สร้างใหม่
+            wallet = new Wallet({ userId, balance: 0 });
+        }
+
+        // เพิ่มเงินเข้า Wallet
+        wallet.balance += parseFloat(amount);
+        await wallet.save();
+
+        // ส่งคืนผลลัพธ์
+        res.status(200).json({ 
+            success: true, 
+            balance: wallet.balance,
+            proofPath: proofPath
+        });
+
+    } catch (error) {
+        console.error('❌ Error processing proof upload:', error);
+        res.status(500).json({ success: false, message: error.message || 'Failed to process proof upload' });
+    }
 });
+
+module.exports = router;
+
+
+    
 
 
 module.exports = router;

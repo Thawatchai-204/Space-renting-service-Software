@@ -1,58 +1,50 @@
-// src/pages/EN/Service_users/Home.js
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
-import { FaHome, FaPlus, FaList, FaUsers, FaCog, FaSignOutAlt, FaBell, FaSearch, FaArrowRight, FaCalendar, FaClock } from 'react-icons/fa';
+import { FaHome, FaPlus, FaUsers, FaCog, FaSignOutAlt, FaBell, FaTrash, FaInfoCircle, FaEdit, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
-import { LanguageContext } from '../../../LanguageContext'; // ตรวจสอบเส้นทางนำเข้า
+import { LanguageContext } from '../../../LanguageContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
-    const { language, toggleLanguage } = useContext(LanguageContext); // ใช้ useContext เพื่อเข้าถึงภาษาและฟังก์ชันเปลี่ยนภาษา
-    const [spaces, setSpaces] = useState([]);
-    const [reservations, setReservations] = useState([]);
+    const { language, toggleLanguage } = useContext(LanguageContext);
+    const [ownedSpaces, setOwnedSpaces] = useState([]);
     const [selectedSpace, setSelectedSpace] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [username, setUsername] = useState('');
     const [userId, setUserId] = useState(null);
-    const [reservationStartDate, setReservationStartDate] = useState('');
-    const [reservationEndDate, setReservationEndDate] = useState('');
-    const [reservationStartTime, setReservationStartTime] = useState('');
-    const [reservationEndTime, setReservationEndTime] = useState('');
     const [walletBalance, setWalletBalance] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [spacesPerPage] = useState(20);
-
+    const [spaceBookings, setSpaceBookings] = useState([]);
     const navigate = useNavigate();
 
+    const setupAxiosAuth = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            delete axios.defaults.headers.common['Authorization'];
+            navigate('/login');
+        }
+    };
+
     useEffect(() => {
+        setupAxiosAuth();
         const storedUserId = localStorage.getItem('userId');
+        const storedUsername = localStorage.getItem('username');
         if (storedUserId) {
             setUserId(storedUserId);
+            setUsername(storedUsername || 'User');
             fetchWalletBalance(storedUserId);
-            fetchReservations(storedUserId);
+            fetchOwnedSpaces(storedUserId);
         } else {
             console.error('User ID not found in localStorage');
+            navigate('/login');
         }
-    }, []);
-
-    useEffect(() => {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) setUsername(storedUsername);
-    }, []);
-
-    useEffect(() => {
-        const fetchSpaces = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/api/spaces');
-                setSpaces(response.data);
-            } catch (error) {
-                console.error('Error fetching spaces:', error);
-            }
-        };
-
-        fetchSpaces();
-    }, []);
+    }, [navigate]);
 
     const fetchWalletBalance = async (userId) => {
         try {
@@ -60,131 +52,115 @@ function Home() {
             setWalletBalance(response.data.balance || 0);
         } catch (error) {
             console.error('Error fetching wallet balance:', error);
+            if (error.response && error.response.status === 401) {
+                navigate('/login');
+            }
         }
     };
 
-    const fetchReservations = async (userId) => {
+    const fetchOwnedSpaces = async (userId) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/spaces`);
+            const userSpaces = response.data.filter(space => space.userId === userId);
+            setOwnedSpaces(userSpaces);
+            console.log('Owned Spaces:', userSpaces);
+        } catch (error) {
+            console.error('Error fetching owned spaces:', error);
+            setOwnedSpaces([]);
+            if (error.response && error.response.status === 401) {
+                navigate('/login');
+            }
+        }
+    };
+
+    const fetchSpaceBookings = async (spaceId) => {
         try {
             const response = await axios.get(`http://localhost:5000/api/reservations/${userId}`);
-            setReservations(response.data);
+            const bookings = response.data.filter(booking => booking.spaceId === spaceId);
+            setSpaceBookings(bookings);
+            console.log('Space Bookings:', bookings);
         } catch (error) {
-            console.error('Error fetching reservations:', error);
+            console.error('Error fetching space bookings:', error);
+            setSpaceBookings([]);
+            if (error.response && error.response.status === 401) {
+                navigate('/login');
+            }
         }
     };
 
     const openModal = (space) => {
         setSelectedSpace(space);
+        fetchSpaceBookings(space._id);
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setSelectedSpace(null);
-        setReservationStartDate('');
-        setReservationEndDate('');
-        setReservationStartTime('');
-        setReservationEndTime('');
         setIsModalOpen(false);
+        setSpaceBookings([]);
     };
 
-    const calculateTotalPrice = () => {
-        if (!reservationStartDate || !reservationEndDate || !reservationStartTime || !reservationEndTime) {
-            return 0;
-        }
-
-        const startDateTime = new Date(`${reservationStartDate}T${reservationStartTime}`);
-        const endDateTime = new Date(`${reservationEndDate}T${reservationEndTime}`);
-
-        if (startDateTime >= endDateTime) {
-            alert('Invalid time range. Please select a valid start and end time.');
-            return 0;
-        }
-
-        const hoursUsed = Math.ceil((endDateTime - startDateTime) / (1000 * 60 * 60));
-        const pricePerHour = selectedSpace?.pricePerHour || 0;
-
-        return hoursUsed * pricePerHour;
-    };
-
-    const handleReserve = async () => {
-        if (!userId) {
-            alert('User ID not found. Please log in again.');
-            return;
-        }
-
-        if (!reservationStartDate || !reservationEndDate || !reservationStartTime || !reservationEndTime) {
-            alert('Please select both start and end dates and times.');
-            return;
-        }
-
-        const totalPrice = calculateTotalPrice();
-
-        if (walletBalance < totalPrice) {
-            alert('Insufficient wallet balance.');
-            return;
-        }
-
-        try {
-            const response = await axios.post('http://localhost:5000/api/reserve', {
-                spaceId: selectedSpace._id,
-                userId: userId,
-                startDate: reservationStartDate,
-                endDate: reservationEndDate,
-                startTime: reservationStartTime,
-                endTime: reservationEndTime,
-                totalPrice: totalPrice,
-            });
-
-            if (response.data.success) {
-                await axios.put(`http://localhost:5000/api/wallet/${userId}`, {
-                    amount: -totalPrice,
-                });
-                fetchWalletBalance(userId);
-                fetchReservations(userId);
-                alert(`Successfully reserved ${selectedSpace.name}!`);
-                closeModal();
-            } else {
-                alert(response.data.message || 'Failed to reserve space.');
+    const handleDeleteSpace = async (spaceId) => {
+        if (window.confirm(language === 'EN' ? 'Are you sure you want to delete this space?' : 'คุณแน่ใจหรือไม่ว่าต้องการลบพื้นที่นี้?')) {
+            try {
+                await axios.delete(`http://localhost:5000/api/spaces/${spaceId}`);
+                setOwnedSpaces(ownedSpaces.filter(space => space._id !== spaceId));
+                toast.success(language === 'EN' ? 'Space deleted successfully!' : 'ลบพื้นที่สำเร็จ!', { position: "top-center", autoClose: 2000 });
+            } catch (error) {
+                console.error('Error deleting space:', error);
+                toast.error(language === 'EN' ? 'Failed to delete space.' : 'ไม่สามารถลบพื้นที่ได้', { position: "top-center", autoClose: 2000 });
+                if (error.response && error.response.status === 401) {
+                    navigate('/login');
+                }
             }
-        } catch (error) {
-            console.error('Failed to reserve space:', error);
-            alert('Failed to reserve space.');
         }
     };
 
-    // Pagination Logic
+    const handleEditSpace = (spaceId) => {
+        navigate(`/Managespace/${spaceId}`);
+    };
+
     const indexOfLastSpace = currentPage * spacesPerPage;
     const indexOfFirstSpace = indexOfLastSpace - spacesPerPage;
-    const currentSpaces = spaces.slice(indexOfFirstSpace, indexOfLastSpace);
+    const currentSpaces = ownedSpaces.slice(indexOfFirstSpace, indexOfLastSpace);
 
     const nextPage = () => {
-        if (currentPage < Math.ceil(spaces.length / spacesPerPage)) {
+        if (currentPage < Math.ceil(ownedSpaces.length / spacesPerPage)) {
             setCurrentPage(currentPage + 1);
         }
     };
 
-    // Switch Role Function
+    const prevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
     const handleSwitchRole = () => {
-        navigate('/home'); // ต้องตรงกับเส้นทางใน App.js
+        navigate('/Home');
+    };
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
     };
 
     return (
-        <div className="container-fluid">
-            {/* Fixed Top Navbar */}
+        <div className="container-fluid" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+            <ToastContainer />
+            {/* Navbar */}
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
-                <div className="container-fluid">
+                <div className="container">
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <a className="nav-link active" href="/Home"><FaHome className="me-2" /> {language === 'EN' ? 'Home' : 'หน้าหลัก'}</a>
+                                <a className="nav-link active" href="/Service_provider/home"><FaHome className="me-2" /> {language === 'EN' ? 'Home' : 'หน้าหลัก'}</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="/Addspace"><FaPlus className="me-2" /> {language === 'EN' ? 'Add Space' : 'เพิ่มพื้นที่'}</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="/Managespace"><FaList className="me-2" /> {language === 'EN' ? 'Manage Space' : 'จัดการพื้นที่'}</a>
                             </li>
                             <li className="nav-item">
                                 <button className="nav-link btn btn-link" onClick={handleSwitchRole}><FaUsers className="me-2" /> {language === 'EN' ? 'Switch Role' : 'เปลี่ยนบทบาท'}</button>
@@ -194,160 +170,199 @@ function Home() {
                             </li>
                         </ul>
                         <div className="d-flex align-items-center gap-3">
-                            <a href="/Profile" className="text-decoration-none text-light"> {username || 'User'}</a>
-                            <a href="/Wallet" className="btn btn-outline-light btn-sm"><FaBell className="me-2" /> {language === 'EN' ? 'Wallet' : 'กระเป๋าเงิน'}: {walletBalance} THB</a>
-                            <a href="/login" className="btn btn-danger btn-sm"><FaSignOutAlt className="me-2" /> {language === 'EN' ? 'Logout' : 'ออกจากระบบ'}</a>
+                            <a href="/Profile" className="text-decoration-none text-light">{username || 'User'}</a>
+                            <a href="/Wallet" className="btn btn-outline-light btn-sm">
+                                <FaBell className="me-2" /> {language === 'EN' ? 'Wallet' : 'กระเป๋าเงิน'}: {walletBalance} THB
+                            </a>
+                            <button onClick={handleLogout} className="btn btn-danger btn-sm"><FaSignOutAlt className="me-2" /> {language === 'EN' ? 'Logout' : 'ออกจากระบบ'}</button>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            {/* Header Image with Search Bar */}
-            <div className="header-image position-relative">
-                <img
-                    src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-                    alt="Header"
-                    className="img-fluid w-100"
-                    style={{ height: '400px', objectFit: 'cover' }}
-                />
-                <div className="header-content position-absolute top-50 start-50 translate-middle text-center text-white">
-                    <h1 className="fw-bold">{language === 'EN' ? 'Welcome to Our Space Rental Service provider' : 'ยินดีต้อนรับสู่บริการเช่าพื้นที่'}</h1>
-                    <p className="lead">{language === 'EN' ? 'Find the perfect space for your needs' : 'ค้นหาพื้นที่ที่เหมาะกับความต้องการของคุณ'}</p>
-                    <div className="input-group mt-4" style={{ maxWidth: '500px', margin: '0 auto' }}>
-                        <input type="text" className="form-control form-control-lg" placeholder={language === 'EN' ? 'Search Here' : 'ค้นหาที่นี่'} />
-                        <button className="btn btn-primary btn-lg" type="button"><FaSearch /></button>
+            {/* Header */}
+            <div className="container mt-5 pt-5">
+                <div className="header-image position-relative mb-4">
+                    <img
+                        src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                        alt="Header"
+                        className="img-fluid w-100 shadow"
+                        style={{ height: '250px', objectFit: 'cover', borderRadius: '10px' }}
+                    />
+                    <div className="header-content position-absolute top-50 start-50 translate-middle text-center text-white">
+                        <h1 className="fw-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)', fontSize: '2rem' }}>{language === 'EN' ? 'Welcome to Service Provider Dashboard' : 'ยินดีต้อนรับสู่แดชบอร์ดผู้ให้บริการ'}</h1>
+                        <p className="lead" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>{language === 'EN' ? 'Manage your spaces efficiently' : 'จัดการพื้นที่ของคุณอย่างมีประสิทธิภาพ'}</p>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Content */}
-            <main className="container-fluid mt-5 pt-4">
-                <header className="d-flex justify-content-between align-items-center mb-4">
-                    <h1 className="fw-bold">{language === 'EN' ? 'Service provider' : 'ผู้ให้บริการ'}</h1>
+                {/* Main Content */}
+                <header className="mb-4 text-center">
+                    <h1 className="fw-bold text-dark" style={{ fontSize: '2rem' }}>{language === 'EN' ? 'Service Provider Dashboard' : 'แดชบอร์ดผู้ให้บริการ'}</h1>
                 </header>
 
-                {/* Reservations Section */}
+                {/* Your Spaces Section */}
                 <section className="mb-5">
-                    <h2 className="fw-bold">{language === 'EN' ? 'My Reservations' : 'การจองของฉัน'}</h2>
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                        {reservations.length > 0 ? (
-                            reservations.map((reservation) => (
-                                <div key={reservation._id} className="col">
-                                    <div className="card h-100 shadow-sm">
-                                        <div className="card-body">
-                                            <h5 className="card-title fw-bold">{reservation.spaceName}</h5>
-                                            <p className="card-text">{language === 'EN' ? 'From:' : 'ตั้งแต่:'} {reservation.startDate} {reservation.startTime}</p>
-                                            <p className="card-text">{language === 'EN' ? 'To:' : 'ถึง:'} {reservation.endDate} {reservation.endTime}</p>
-                                            <p className="card-text">{language === 'EN' ? 'Total Price:' : 'ราคารวม:'} {reservation.totalPrice} THB</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p>{language === 'EN' ? 'No reservations available at the moment.' : 'ไม่มีข้อมูลการจองในขณะนี้'}</p>
-                        )}
-                    </div>
-                </section>
-
-                {/* Spaces Section */}
-                <section>
-                    <h2 className="fw-bold">{language === 'EN' ? 'Ready to Reserve' : 'พร้อมให้จอง'}</h2>
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    <h2 className="fw-bold text-dark mb-3">{language === 'EN' ? 'Your Spaces' : 'พื้นที่ของคุณ'}</h2>
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                         {currentSpaces.length > 0 ? (
                             currentSpaces.map((space) => (
                                 <div key={space._id} className="col">
-                                    <div className="card h-100 shadow-sm space-card">
-                                        <img src={`http://localhost:5000/uploads/${space.image}`} className="card-img-top" alt={space.name} />
+                                    <div className="card h-100 shadow-sm">
+                                        <img 
+                                            src={space.images && space.images.length > 0 ? `http://localhost:5000/uploads/${space.images[0]}` : 'https://via.placeholder.com/150'} 
+                                            className="card-img-top" 
+                                            alt={space.name} 
+                                            style={{ height: '150px', objectFit: 'cover' }} 
+                                        />
                                         <div className="card-body">
                                             <h5 className="card-title fw-bold">{space.name}</h5>
                                             <p className="card-text text-muted">{space.advertisingWords}</p>
                                             <p className="card-text"><small className="text-muted">{space.address}</small></p>
                                             <p className="card-text fw-bold">{language === 'EN' ? 'Price per Hour:' : 'ราคาต่อชั่วโมง:'} {space.pricePerHour || 'N/A'} THB</p>
-                                            <button onClick={() => openModal(space)} className="btn btn-secondary w-100">{language === 'EN' ? 'View Details' : 'ดูรายละเอียด'}</button>
+                                            <div className="d-flex justify-content-between">
+                                                <button onClick={() => openModal(space)} className="btn btn-info btn-sm">
+                                                    <FaInfoCircle className="me-2" /> {language === 'EN' ? 'Details' : 'รายละเอียด'}
+                                                </button>
+                                                <button onClick={() => handleDeleteSpace(space._id)} className="btn btn-danger btn-sm">
+                                                    <FaTrash className="me-2" /> {language === 'EN' ? 'Delete' : 'ลบ'}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p>{language === 'EN' ? 'No spaces available at the moment.' : 'ไม่มีพื้นที่ว่างในขณะนี้'}</p>
+                            <div className="col-12 text-center">
+                                <p className="text-muted">{language === 'EN' ? 'You have not added any spaces yet.' : 'คุณยังไม่ได้เพิ่มพื้นที่ใด ๆ'}</p>
+                                <a href="/Addspace" className="btn btn-primary mt-2">
+                                    <FaPlus className="me-2" /> {language === 'EN' ? 'Add Your First Space' : 'เพิ่มพื้นที่แรกของคุณ'}
+                                </a>
+                            </div>
                         )}
                     </div>
-                    {/* Pagination Button */}
-                    <div className="d-flex justify-content-center mt-4">
-                        <button onClick={nextPage} className="btn btn-dark">
-                            {language === 'EN' ? 'Next Page' : 'หน้าถัดไป'} <FaArrowRight className="ms-2" />
-                        </button>
-                    </div>
+                    {currentSpaces.length > 0 && (
+                        <div className="d-flex justify-content-center mt-4 gap-3">
+                            <button onClick={prevPage} className="btn btn-dark" disabled={currentPage === 1}>
+                                <FaArrowLeft className="me-2" /> {language === 'EN' ? 'Previous' : 'ก่อนหน้า'}
+                            </button>
+                            <button onClick={nextPage} className="btn btn-dark" disabled={currentPage >= Math.ceil(ownedSpaces.length / spacesPerPage)}>
+                                {language === 'EN' ? 'Next' : 'ถัดไป'} <FaArrowRight className="ms-2" />
+                            </button>
+                        </div>
+                    )}
                 </section>
-            </main>
+            </div>
 
-            {/* Footer with Logo and Language Toggle */}
+            {/* Footer */}
             <footer className="bg-dark text-light py-4 mt-5">
                 <div className="container text-center">
                     <img src="https://raw.githubusercontent.com/Thawatchai-204/Space-renting-service-Software/refs/heads/main/Screenshot%20202024-07-26%2020013811.png" alt="Logo" width="100" />
                     <p className="mt-3">© 2023 {language === 'EN' ? 'All rights reserved.' : 'สงวนลิขสิทธิ์'}</p>
                     <div className="mt-2">
-                        <button
-                            onClick={() => toggleLanguage('EN')}
-                            className="btn btn-link text-light"
-                        >
-                            🇺🇸
-                        </button>
-                        <button
-                            onClick={() => toggleLanguage('TH')}
-                            className="btn btn-link text-light"
-                        >
-                            🇹🇭
-                        </button>
+                        <button onClick={() => toggleLanguage('EN')} className="btn btn-link text-light">🇺🇸</button>
+                        <button onClick={() => toggleLanguage('TH')} className="btn btn-link text-light">🇹🇭</button>
                     </div>
                 </div>
             </footer>
 
-            {/* Modal */}
+            {/* Centered Modal (80% Width & Height, Single Column) */}
             {isModalOpen && selectedSpace && (
-                <div className="modal fade show" style={{ display: 'block' }}>
-                    <div className="modal-dialog modal-dialog-centered modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title fw-bold">{selectedSpace.name}</h5>
-                                <button type="button" className="btn-close" onClick={closeModal}></button>
+                <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.8)' }}>
+                    <div 
+                        className="modal-dialog" 
+                        style={{ 
+                            width: '80%', 
+                            maxWidth: '80%', 
+                            height: '80vh', 
+                            margin: 'auto', 
+                            position: 'absolute', 
+                            top: '50%', 
+                            left: '50%', 
+                            transform: 'translate(-50%, -50%)' 
+                        }}
+                    >
+                        <div className="modal-content" style={{ borderRadius: '10px', overflow: 'hidden', height: '100%' }}>
+                            <div className="modal-header bg-primary text-white" style={{ padding: '1.5rem', borderBottom: 'none' }}>
+                                <h3 className="modal-title fw-bold">{selectedSpace.name}</h3>
+                                <button type="button" className="btn-close btn-close-white" onClick={closeModal} style={{ fontSize: '1.5rem' }}></button>
                             </div>
-                            <div className="modal-body">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <img src={`http://localhost:5000/uploads/${selectedSpace.image}`} className="img-fluid rounded" alt={selectedSpace.name} />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <p className="text-muted">{selectedSpace.advertisingWords}</p>
-                                        <p className="text-muted"><FaCalendar className="me-2" />{selectedSpace.address}</p>
-                                        <p className="fw-bold">{language === 'EN' ? 'Price per Hour:' : 'ราคาต่อชั่วโมง:'} {selectedSpace.pricePerHour || 'N/A'} THB</p>
-                                        <hr />
-                                        <h6 className="fw-bold">{language === 'EN' ? 'Reservation Details' : 'รายละเอียดการจอง'}</h6>
-                                        <div className="mb-3">
-                                            <label className="form-label">{language === 'EN' ? 'Start Date:' : 'วันที่เริ่มต้น:'}</label>
-                                            <input type="date" className="form-control" value={reservationStartDate} onChange={(e) => setReservationStartDate(e.target.value)} />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label">{language === 'EN' ? 'End Date:' : 'วันที่สิ้นสุด:'}</label>
-                                            <input type="date" className="form-control" value={reservationEndDate} onChange={(e) => setReservationEndDate(e.target.value)} />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label">{language === 'EN' ? 'Start Time:' : 'เวลาเริ่มต้น:'}</label>
-                                            <input type="time" className="form-control" value={reservationStartTime} onChange={(e) => setReservationStartTime(e.target.value)} />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label">{language === 'EN' ? 'End Time:' : 'เวลาสิ้นสุด:'}</label>
-                                            <input type="time" className="form-control" value={reservationEndTime} onChange={(e) => setReservationEndTime(e.target.value)} />
-                                        </div>
-                                        <div className="mb-3">
-                                            <p className="fw-bold">{language === 'EN' ? 'Total Price:' : 'ราคารวม:'} {calculateTotalPrice()} THB</p>
+                            <div className="modal-body p-5" style={{ backgroundColor: '#fff', overflowY: 'auto' }}>
+                                <div className="container">
+                                    <div className="row g-4">
+                                        {/* Single Column: Images and Details */}
+                                        <div className="col-12">
+                                            <div className="card shadow-sm">
+                                                <div className="card-body p-4">
+                                                    <h5 className="fw-bold mb-3">{language === 'EN' ? 'Images' : 'รูปภาพ'}</h5>
+                                                    <div className="d-flex flex-wrap gap-3 mb-4">
+                                                        {selectedSpace.images && selectedSpace.images.length > 0 ? (
+                                                            selectedSpace.images.map((image, index) => (
+                                                                <img
+                                                                    key={index}
+                                                                    src={`http://localhost:5000/uploads/${image}`}
+                                                                    alt={`${selectedSpace.name} ${index + 1}`}
+                                                                    className="img-fluid rounded shadow-sm"
+                                                                    style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
+                                                                />
+                                                            ))
+                                                        ) : (
+                                                            <p className="text-muted">{language === 'EN' ? 'No images available' : 'ไม่มีรูปภาพ'}</p>
+                                                        )}
+                                                    </div>
+
+                                                    <h5 className="fw-bold mb-4">{language === 'EN' ? 'Space Details' : 'รายละเอียดพื้นที่'}</h5>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Name:' : 'ชื่อ:'}</strong> {selectedSpace.name}</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Description:' : 'คำโฆษณา:'}</strong> {selectedSpace.advertisingWords}</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Address:' : 'ที่อยู่:'}</strong> {selectedSpace.address}</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Type:' : 'ประเภท:'}</strong> {selectedSpace.types}</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Size:' : 'ขนาด:'}</strong> {selectedSpace.size}</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Price per Hour:' : 'ราคาต่อชั่วโมง:'}</strong> {selectedSpace.pricePerHour || 'N/A'} THB</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Price per Day:' : 'ราคาต่อวัน:'}</strong> {selectedSpace.pricePerDay || 'N/A'} THB</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Price per Week:' : 'ราคาต่อสัปดาห์:'}</strong> {selectedSpace.pricePerWeek || 'N/A'} THB</p>
+                                                    <p className="mb-3"><strong>{language === 'EN' ? 'Price per Month:' : 'ราคาต่อเดือน:'}</strong> {selectedSpace.pricePerMonth || 'N/A'} THB</p>
+
+                                                    <h5 className="fw-bold mt-5 mb-4">{language === 'EN' ? 'Booking History' : 'ประวัติการเช่า'}</h5>
+                                                    {spaceBookings.length > 0 ? (
+                                                        <div className="table-responsive">
+                                                            <table className="table table-striped table-hover">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>{language === 'EN' ? 'Start Date' : 'วันที่เริ่ม'}</th>
+                                                                        <th>{language === 'EN' ? 'End Date' : 'วันที่สิ้นสุด'}</th>
+                                                                        <th>{language === 'EN' ? 'Start Time' : 'เวลาเริ่ม'}</th>
+                                                                        <th>{language === 'EN' ? 'End Time' : 'เวลาสิ้นสุด'}</th>
+                                                                        <th>{language === 'EN' ? 'Total Price' : 'ราคารรวม'}</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {spaceBookings.map((booking) => (
+                                                                        <tr key={booking._id}>
+                                                                            <td>{booking.startDate}</td>
+                                                                            <td>{booking.endDate}</td>
+                                                                            <td>{booking.startTime}</td>
+                                                                            <td>{booking.endTime}</td>
+                                                                            <td>{booking.totalPrice} THB</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-muted">{language === 'EN' ? 'No bookings yet.' : 'ยังไม่มีการจอง'}</p>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={closeModal}>{language === 'EN' ? 'Close' : 'ปิด'}</button>
-                                <button type="button" className="btn btn-primary" onClick={handleReserve}>{language === 'EN' ? 'Reserve' : 'จอง'}</button>
+                            <div className="modal-footer p-3" style={{ backgroundColor: '#fff', borderTop: 'none' }}>
+                                <button type="button" className="btn btn-secondary btn-lg" onClick={closeModal}>
+                                    {language === 'EN' ? 'Close' : 'ปิด'}
+                                </button>
+                                <button type="button" className="btn btn-primary btn-lg" onClick={() => handleEditSpace(selectedSpace._id)}>
+                                    <FaEdit className="me-2" /> {language === 'EN' ? 'Edit' : 'แก้ไข'}
+                                </button>
                             </div>
                         </div>
                     </div>

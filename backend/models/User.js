@@ -1,37 +1,44 @@
 const mongoose = require('mongoose');
 
-// User schema definition
+// User Schema
 const userSchema = new mongoose.Schema({
-    name: String,
     email: { type: String, required: true, unique: true },
-    phone: String,
     password: { type: String, required: true },
-    balance: { type: Number, default: 0 },
-    paymentProof: { type: String }, // เก็บ URL ของหลักฐานการเติมเงิน
-    role: { type: String, required: true, default: 'user' }, // เพิ่มค่าเริ่มต้นสำหรับ role
+    username: { type: String },
+    role: { type: String, default: 'user' },
     walletBalance: { type: Number, default: 0 },
-    username: { type: String, required: true }, // เพิ่ม username
-    transactions: [
-        {
-            date: { type: String, required: true },
-            time: { type: String, required: true },
-            description: { type: String, required: true },
-            amount: { type: Number, required: true },
-        },
-    ],
+    profileImage: { type: String },
+    idCardImage: { type: String },
+    idCardStatus: { type: String, default: 'pending' },
+    phone: { type: String },
+    address: { type: String },
+    facebook: { type: String },
+    line: { type: String }
 });
 
-// Transaction schema
+const User = mongoose.model('User', userSchema);
+
+// Transaction Schema
 const transactionSchema = new mongoose.Schema({
-    type: { type: String, enum: ['Top-up', 'Booking', 'Proof Upload'], required: true },
-    amount: { type: Number, required: false }, // สำหรับ Top-up และ Booking
-    date: { type: Date, default: Date.now },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     description: { type: String, required: true },
-    proofImage: { type: String, required: false } // สำหรับหลักฐานการโอนเงิน
+    amount: { type: Number, required: true },
+    type: { 
+        type: String, 
+        enum: ['deposit', 'withdrawal'], 
+        required: true 
+    },
+    status: { 
+        type: String, 
+        enum: ['pending', 'completed', 'rejected'], // เพิ่ม 'rejected' ตามที่แนะนำก่อนหน้านี้
+        default: 'pending' 
+    },
+    paymentProof: { type: String },
+    rejectReason: { type: String },
+    createdAt: { type: Date, default: Date.now }
 });
 
-// ตรวจสอบว่ามีโมเดล User และ Transaction อยู่แล้วหรือยัง
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
 
+// Export หลังจากกำหนดทั้งสอง model
 module.exports = { User, Transaction };

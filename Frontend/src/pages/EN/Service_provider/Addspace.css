@@ -1,121 +1,80 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* Addspace.css */
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    margin: 0;
-    padding: 0;
-    height: 100vh;
+/* ปรับแต่ง container เพื่อให้ฟอร์มขยายเต็มจอ */
+.form-container {
+    max-width: 98%; /* ขยายความกว้างให้เต็มจอมากขึ้น */
+    margin: 0 auto; /* จัดกึ่งกลาง */
+    padding-left: 10px; /* ลดช่องว่างซ้าย */
+    padding-right: 10px; /* ลดช่องว่างขวา */
+  }
+  
+  /* ปรับแต่ง main เพื่อให้มีช่องว่างด้านบนและล่าง */
+  .form-main {
+    padding-top: 80px; /* เว้นระยะจาก navbar */
+    padding-bottom: 80px; /* เว้นระยะจาก footer */
+    min-height: 100vh; /* ให้สูงเต็มจอ */
     display: flex;
     flex-direction: column;
-}
-
-.navbar {
-    padding: 1rem 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-nav .nav-link {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-}
-
-.navbar-nav .nav-link.active {
-    color: #007bff;
-}
-
-.navbar-nav .nav-link:hover {
-    color: #0056b3;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-}
-
-.btn-danger:hover {
-    background-color: #c82333;
-}
-
-.container-fluid {
-    padding: 0;
-}
-
-.reserve-form-container {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    width: 95%;
-    max-width: none;
-    margin: 0;
-}
-
-.reserve-form {
+    justify-content: center; /* จัดกึ่งกลางในแนวตั้ง */
+  }
+  
+  /* ปรับแต่ง row เพื่อให้คอลัมน์จัดตำแหน่งตาม navbar */
+  .form-row {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    font-weight: 500;
+    justify-content: space-between; /* ชิดซ้าย-กลาง-ขวา */
+    align-items: flex-start; /* จัดให้ชิดด้านบน */
+  }
+  
+  /* ปรับแต่งคอลัมน์ให้มีขนาดเหมาะสม */
+  .form-column {
+    flex: 0 0 30%; /* ให้แต่ละคอลัมน์กว้าง 30% */
+    max-width: 30%; /* จำกัดความกว้างสูงสุด */
+    padding: 0 15px; /* ช่องว่างระหว่างคอลัมน์ */
+  }
+  
+  /* ปรับคอลัมน์ Image ให้ชิดซ้ายสุด (ตรงกับ Home) */
+  .form-column-image {
+    margin-right: auto; /* ชิดซ้าย */
+    padding-left: 0; /* ลดช่องว่างซ้ายเพื่อให้ชิดขอบ */
+  }
+  
+  /* ปรับคอลัมน์ Basic Info ให้เริ่มจากตำแหน่ง Add Space */
+  .form-column-info {
+    margin-left: 100px; /* ปรับระยะให้ตรงกับ Add Space (อาจต้องปรับตามขนาดหน้าจอ) */
+  }
+  
+  /* ปรับคอลัมน์ Pricing ให้ชิดขวา */
+  .form-column-pricing {
+    margin-left: auto; /* ชิดขวา */
+    padding-right: 0; /* ลดช่องว่างขวาเพื่อให้ชิดขอบ */
+  }
+  
+  /* ปรับแต่งฟอร์มให้มีช่องว่างภายใน */
+  .form-group {
+    margin-bottom: 1.5rem; /* เพิ่มช่องว่างระหว่างฟิลด์ */
+  }
+  
+  /* ปรับแต่งปุ่มให้มีขนาดและช่องว่างเหมาะสม */
+  .btn {
+    padding: 0.5rem 1.5rem; /* ปรับขนาดปุ่ม */
+  }
+  
+  /* ปรับแต่ง input และ select ให้มีขนาดเหมาะสม */
+  .form-control {
+    width: 100%; /* ให้ input และ select เต็มความกว้างของคอลัมน์ */
+    padding: 0.5rem; /* ปรับ padding ภายใน */
+  }
+  
+  /* ปรับแต่ง label ให้ชิดซ้าย */
+  .form-label {
+    margin-bottom: 0.5rem; /* ช่องว่างระหว่าง label และ input */
+  }
+  
+  /* ปรับแต่งข้อความ "ไม่ได้เลือกไฟล์ใด" */
+  .text-muted {
     display: block;
-    margin-bottom: 0.5rem;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.image-preview {
-    margin-top: 1rem;
-    text-align: center;
-}
-
-.image-preview img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
+    margin-top: 0.25rem;
+  }
+  .form-control.expanded {
+    transition: all 0.3s ease;
+  }

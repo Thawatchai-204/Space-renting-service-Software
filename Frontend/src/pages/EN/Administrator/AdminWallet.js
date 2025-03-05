@@ -34,8 +34,7 @@ function Wallet() {
                     setTransactionHistory([]); // ตั้งค่าเป็น array ว่างหากไม่มีข้อมูล
                 }
             } catch (error) {
-                console.error('Error fetching wallet data:', error);
-                alert('Error fetching wallet data');
+                
             }
         };
     

@@ -86,3 +86,8 @@ body {
 .col-md-4, .col-md-8 {
     padding: 0 15px; /* Add padding to columns */
 }
+/* Profile.css */
+.profile-image-placeholder,
+.id-card-placeholder {
+    background-color: #e9ecef; /* สีพื้นหลัง placeholder */
+}

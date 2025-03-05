@@ -1,108 +1,83 @@
-.login-container {
-    display: flex;
-    height: 100vh;
-}
-
-.login-left, .login-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.login-left {
+/* สีหลักที่ใช้ */
+:root {
+    --primary: #003087; /* น้ำเงินเข้ม - ความน่าเชื่อถือ */
+    --secondary: #6c757d; /* เทา - ความเป็นกลาง */
+    --background: #f5f6f5; /* เทาอ่อน - พื้นหลังสะอาดตา */
+    --footer-bg: #1a2526; /* เข้มสำหรับ footer */
+    --text-light: #ffffff; /* ขาวสำหรับตัวอักษรใน footer */
+    --text-muted: #495057; /* เทาเข้มสำหรับข้อความรอง */
+  }
+  
+  /* พื้นหลังของหน้า */
+  .login-page {
+    background-color: var(--background);
+  }
+  
+  /* การ์ดฟอร์มล็อกอิน */
+  .card {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     background-color: #ffffff;
-    text-align: center;
-}
-
-.login-left img {
-    max-width: 70%;
-    height: auto;
-    
-}
-
-.login-right {
-    background-color: #333;
-    color: white;
-    text-align: center;
-}
-
-.login-right h1 {
-    margin-bottom: 20px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.social-login {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.social-button {
-    background: none;
-    border: 1px solid white;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.social-button.facebook { background-color: #3b5998; }
-.social-button.google { background-color: #db4437; }
-.social-button.apple { background-color: #333; }
-.social-button.line { background-color: #00c300; }
-
-.remember-me {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.remember-me input {
-    margin-right: 10px;
-}
-
-.forgot-password {
-    margin-bottom: 20px;
-}
-
-.forgot-password a {
-    color: white;
-    text-decoration: underline;
-}
-
-.login-button {
-    background-color: white;
-    color: #333;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.create-account {
-    margin-top: 20px;
-}
-
-.create-account a {
-    color: white;
-    text-decoration: underline;
-}
+  }
+  
+  /* ข้อความหลัก (เช่น หัวข้อ) */
+  .text-primary {
+    color: var(--primary) !important;
+  }
+  
+  /* ปุ่มหลัก */
+  .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #002366; /* น้ำเงินเข้มขึ้นเมื่อ hover */
+    border-color: #002366;
+  }
+  
+  .btn-primary:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  /* ปุ่มเลือกภาษาใน footer */
+  .btn-outline-light {
+    color: var(--text-light);
+    border-color: var(--text-light);
+  }
+  
+  .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: var(--footer-bg);
+    color: var(--text-light);
+  }
+  
+  /* ข้อความรอง */
+  .text-muted {
+    color: var(--text-muted) !important;
+  }
+  
+  /* Input field */
+  .form-control {
+    border-color: #ced4da;
+    box-shadow: none;
+  }
+  
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 48, 135, 0.25);
+  }
+  
+  /* Alert */
+  .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+  }
