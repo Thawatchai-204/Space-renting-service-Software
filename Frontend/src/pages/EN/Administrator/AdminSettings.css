@@ -1,0 +1,58 @@
+/* src/pages/EN/Service_users/Settings.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Gradient background */
+}
+
+.navbar {
+    padding: 1rem 0;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.header-image {
+    margin-top: 56px; /* Adjust for fixed navbar height */
+}
+
+.header-content {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Additional styles for better readability */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Make headings bold */
+}
+
+p {
+    font-weight: 400; /* Normal weight for paragraphs */
+}

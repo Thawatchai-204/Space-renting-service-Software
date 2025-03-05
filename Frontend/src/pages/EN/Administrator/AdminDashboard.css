@@ -1,0 +1,195 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffffff, #c6c6c6); /* Gradient background */
+}
+
+/* Custom Styles */
+.navbar {
+    padding: 1rem 0;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.space-card {
+    border: 1px solid #e0e0e0;
+}
+
+.space-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-image {
+    margin-top: 56px; /* Adjust for fixed navbar height */
+}
+
+.header-content {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Apply Poppins font to the entire body */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Gradient background */
+}
+
+/* Custom Styles */
+.navbar {
+    padding: 1rem 0;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.space-card {
+    border: 1px solid #e0e0e0;
+}
+
+.space-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-image {
+    margin-top: 56px; /* Adjust for fixed navbar height */
+}
+
+.header-content {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Additional styles for better readability */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Make headings bold */
+}
+
+p {
+    font-weight: 400; /* Normal weight for paragraphs */
+}
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Apply Poppins font to the entire body */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Gradient background */
+}
+
+/* Custom Styles */
+.navbar {
+    padding: 1rem 0;
+}
+
+.card {
+    border: 1px solid #e0e0e0; /* Add border */
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.space-card {
+    border: 1px solid #e0e0e0;
+}
+
+.space-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-image {
+    margin-top: 56px; /* Adjust for fixed navbar height */
+}
+
+.header-content {
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Ensure images have the same size and aspect ratio */
+.card-img-top {
+    width: 100%;
+    height: 200px; /* Fixed height */
+    object-fit: cover; /* Crop image to fit */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Additional styles for better readability */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Make headings bold */
+}
+
+p {
+    font-weight: 400; /* Normal weight for paragraphs */
+}
